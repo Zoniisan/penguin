@@ -23,7 +23,7 @@ https://penguin.zuya.tokyo/
 
 情報は下記 Wiki サイトに掲載します。
 
-https://wiki.zuya.tokyo/
+https://wiki.zuya.tokyo/penguin/
 
 ## Development
 開発する際は次の手順に従ってください。
@@ -34,7 +34,7 @@ https://wiki.zuya.tokyo/
     * docker-compose を使わずに python 環境を手元に作りたい場合は必要です。
 
 ### Steps
-1. `git clone https://github.com/zoniisan/penguin`
+1. `git clone https://github.com/Zoniisan/penguin`
 1. `make`
     * 環境変数ファイル（git 管理外）が設定されます。
 1. 環境設定ファイルを下記のとおり編集します。

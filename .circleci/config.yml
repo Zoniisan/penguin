@@ -1,5 +1,5 @@
 # circleCIのバージョン指定
-version: 2
+version: 2.1
 jobs:
   build:
     machine:
@@ -29,7 +29,9 @@ jobs:
     steps:
       - checkout
       # CircleCIに登録した秘密鍵を呼び出す。
-      - add_ssh_keys
+      - add_ssh_keys:
+          fingerprints:
+            - "9f:fe:67:6e:66:4d:00:f4:9d:4f:1f:a6:bc:83:7b:f5"
       - run: ssh ${USER_NAME}@${HOST_NAME} 'cd penguin && git pull && docker-compose down && docker-compose up -d'
 
 # テストが成功した場合のみ、deployを実行するようにします。
