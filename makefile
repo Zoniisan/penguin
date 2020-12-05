@@ -1,7 +1,7 @@
 all:			program
 
-program:		django/penguin/.env postgres/.env_postgres
-				cp setup/.sample.env django/penguin/.env && cp setup/.sample.env_postgres postgres/.env_postgres
+program:		django/penguin/.env .env_postgres
+				cp setup/.sample.env django/penguin/.env && cp setup/.sample.env_postgres .env_postgres
 
 install:        django/Pipfile.lock
 				cd django && pipenv install --dev && cd ..
