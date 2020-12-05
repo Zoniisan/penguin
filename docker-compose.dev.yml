@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+    # サービス名は自由に設定
+    django:
+        # djangoディレクトリの中から`Dockerfile`を探す
+        build: ./django
+        # サービス起動後に入力されるコマンドを設定
+        command: >
+            sh -c "python manage.py migrate &&
+            python manage.py collectstatic --no-input --clear &&
+            python manage.py runserver 0.0.0.0:8000"
+        # データを永続化させる場合の設定。`host:container`でパスを記載
+        volumes:
+            - ./django/:/usr/src/django/
+        # 開放するポートを指定。`host:container`でポートを記載
+        ports:
+            - 8000:8000
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+        # 接続するサービスを指定
+        depends_on:
+            - postgres
+            - redis
+
+    postgres:
+        # 公式からイメージをpull
+        image: postgres:11.4-alpine
+        # データベースの永続化
+        # ホストのディレクトリにマウントしない様に、先頭に`./`をつけない
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        env_file:
+            - ./.env_postgres
+
+    redis:
+        image: redis:latest
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/var/lib/redis/data
+        command: redis-server --appendonly yes
+
+    celery:
+        build:
+            context: ./django
+        command: celery -A penguin worker -l info
+        volumes:
+            - ./django/:/usr/src/django/
+        depends_on:
+            - django
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+
+    celery-beat:
+        build:
+            context: ./django
+        command: celery -A penguin beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+        volumes:
+            - ./django/:/usr/src/django/
+        depends_on:
+            - django
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+
+# トップレベルに書く「名前付きvolumes」は複数サービスから参照できる
+volumes:
+    postgres_data:
+    redis_data:

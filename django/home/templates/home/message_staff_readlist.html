@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+スタッフページ
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:message_staff_list' %}" class="breadcrumb-item">メッセージ管理</a>
+<a href="{% url 'home:message_staff_detail' message.id %}" class="breadcrumb-item">詳細</a>
+<span class="breadcrumb-item active">全宛先・既読状況</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>全宛先・既読状況</h3>
+            </div>
+            <div class="card-body">
+                <h4>メッセージ概要</h4>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">タイトル</th>
+                            <td>{{ message.subject }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信日時</th>
+                            <td>{{ message.create_datetime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>全宛先・既読状況</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>宛先</th>
+                                <th>既読</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in object_list %}
+                            <tr>
+                                <td>{{ obj.user }}</td>
+                                {% if obj.read %}
+                                <td class="table-success">
+                                    {{ obj.read.first.create_datetime }}
+                                </td>
+                                {% else %}
+                                <td class="table-danger">
+                                    未読
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock contents %}

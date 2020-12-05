@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+{% block headtitle %}
+お問い合わせ
+{% endblock headtitle %}
+
+{% block ac_contact %}
+active
+{% endblock ac_contact %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">お問い合わせ</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>お問い合わせ</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i>&nbsp;送信する前にお読みください</h4>
+                        <ul class="mb-0">
+                            <li>送信すると、担当するスタッフがあなたの情報を閲覧できるようになります。</li>
+                            <li>返信を行う場合は、原則 PENGUIN に登録されたメールアドレス宛に行います。</li>
+                            <li>必ず返信を行うとは限りません。</li>
+                        </ul>
+                    </div>
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success mb-0" data-toggle="modal" data-target="#modelId">
+                        送信
+                    </button>
+                    {% endbuttons %}
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">確認</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            本当に送信しますか？
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                            <button type="submit" class="btn btn-success">送信</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

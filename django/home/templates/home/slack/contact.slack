@@ -1,0 +1,21 @@
+{% extends django_slack %}
+
+{% load django_slack %}
+
+{% block channel %}
+{{ object.kind.slack_ch }}
+{% endblock channel %}
+
+{% block text %}
+お問い合わせを受理しました。
+担当者は対応してください。
+
+種別
+{{ object.kind }}
+
+送信者
+{{ object.writer }}
+
+本文
+{{ object.body }}
+{% endblock text %}

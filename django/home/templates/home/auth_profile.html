@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+プロフィール
+{% endblock headtitle %}
+
+{% block ac_profile %}
+active
+{% endblock ac_profile %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">プロフィール</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>プロフィール</h3>
+            </div>
+            <div class="card-body">
+                {% if request.user.is_identified %}
+                <div class="alert alert-warning" role="alert">
+                    あなたと同じ企画に参加しているユーザーには <strong>{{ request.user.get_full_name }}</strong> と表示されます。
+                </div>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学生番号</th>
+                            <td>{{ request.user.stid }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">姓</th>
+                            <td>{{ request.user.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap"> 名</th>
+                            <td>{{ request.user.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">姓（かな）</th>
+                            <td>{{ request.user.last_name_kana }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">名（かな）</th>
+                            <td>{{ request.user.first_name_kana }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学部</th>
+                            <td>{{ request.user.get_faculty_display }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学年</th>
+                            <td>{{ request.user.get_grade_display }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">メールアドレス</th>
+                            <td>{{ request.user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">電話番号</th>
+                            <td>{{ request.user.tel }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <p>まだ個人情報を入力していません。下のボタンから入力できます。</p>
+                <a class="btn btn-primary" href="{% url 'home:auth_identify_token_create' %}" role="button">個人情報入力</a>
+                {% endif %}
+            </div>
+            <div class="card-footer text-muted">
+                プロフィール情報の変更は原則できません。<br>
+                婚姻に伴う改姓や情報誤入力など、やむを得ない事情がある場合は、
+                システム担当にお問い合わせください。
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

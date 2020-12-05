@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block headtitle %}
+503 Service Unavailable
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active text-danger">503 Service Unavailable</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="card">
+    <div class="card-header text-danger">
+        <h4>503 Service Unavailable</h4>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">一時的に利用できません。</h4>
+        <ul>
+            <li>原因例</li>
+            <ul>
+                <li>メンテナンス期間中である。</li>
+                <li>アクセスが集中してサーバーがダウンした。</li>
+            </ul>
+            <li>解決策</li>
+            <ul>
+                <li>念のためもう一度時間をおいてリロードしてください。</li>
+                <li>メンテナンス期間については、システム管理者にお問い合わせください。</li>
+            </ul>
+        </ul>
+    </div>
+</div>
+{% endblock contents %}

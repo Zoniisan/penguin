@@ -1,0 +1,194 @@
+{% load static %}
+{% load bootstrap4 %}
+{% load message_alert %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block headtitle %}{% endblock headtitle %} | PENGUIN</title>
+    <meta name="description" content="PENGUIN は 11 月祭に関する事務手続きをサポートする Web アプリです。">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+        integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <!-- Google fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="{% static 'css/style.blue.css' %}" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
+    <!-- others -->
+    {% block extracss %}{% endblock extracss %}
+</head>
+
+<body>
+    <div class="page">
+        <!-- Main Navbar-->
+        <div class="fixed-top">
+            <header class="header">
+                <nav class="navbar">
+                    <div class="container-fluid">
+                        <div class="navbar-holder d-flex align-items-center justify-content-between">
+                            <!-- Navbar Header-->
+                            <div class="navbar-header">
+                                <!-- Navbar Brand --><a href="{% url 'home:index' %}"
+                                    class="navbar-brand d-none d-sm-inline-block">
+                                    <div class="brand-text d-none d-lg-inline-block">nise<strong>PENGUIN</strong></div>
+                                    <div class="brand-text d-none d-sm-inline-block d-lg-none">
+                                        nise<strong>PENGUIN</strong></div>
+                                </a>
+                                <!-- Toggle Button--><a id="toggle-btn" href="#"
+                                    class="menu-btn active"><span></span><span></span><span></span></a>
+                            </div>
+                            <!-- Navbar Menu -->
+                            <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
+                                <!-- Subtitle -->
+                                <li class="nav-item d-none d-xl-block">PErsonal New-generation Graphic User Interface
+                                    for November festival</li>
+                                <!-- Notifications-->
+                                {% message_alert request.user.id %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'home:message_list' %}">
+                                        <i class="fas fa-bell"></i>
+                                        {% message_alert request.user.id %}
+                                        {% if unread_message_count %}
+                                        <span class="badge bg-red badge-corner">{{ unread_message_count }}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                <!-- Logout    -->
+                                {% if request.user.is_authenticated %}
+                                <li class="nav-item"><a href="{% url 'home:auth_logout' %}" class="nav-link logout">
+                                        <span class="d-none d-sm-inline">Logout</span><i
+                                            class="fas fa-sign-out-alt"></i></a>
+                                </li>
+                                {% else %}
+                                <li class="nav-item"><a href="{% url 'home:auth_login' %}" class="nav-link logout">
+                                        <span class="d-none d-sm-inline">Login</span><i
+                                            class="fas fa-sign-in-alt"></i></a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        </div>
+
+        <div class="page-content d-flex align-items-stretch">
+            <!-- Side Navbar -->
+            <nav class="side-navbar sidebar-fixed">
+                <!-- Sidebar Header-->
+                <div class="mt-5"></div>
+                <div class="pt-4"></div>
+                <div class="sidebar-header d-flex align-items-center">
+                    <div class="avatar"><img src="{% static 'img/penguin_logo.png' %}" alt="penguin logo"
+                            class="img-fluid rounded-circle"></div>
+                    <div class="title">
+                        <h1 class="h4">{{ request.user.get_short_name }}</h1>
+                        <p>{{ request.user.stid }}</p>
+                        {% if request.user.is_authenticated %}
+                        {% if request.user.is_identified %}
+                        {% if request.user.is_admin %}
+                        <span class="badge badge-pill badge-danger">Admin</span>
+                        {% elif request.user.is_staff %}
+                        <span class="badge badge-pill badge-warning">Staff</span>
+                        {% else %}
+                        <span class="badge badge-pill badge-primary">Normal</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="badge badge-pill badge-secondary">Not Identified</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Sidebar Navidation Menus-->
+                <ul class="list-unstyled">
+                    <li class="{% block ac_home %}{% endblock ac_home %}"><a href="{% url 'home:index' %}"><i
+                                class="fa fa-home"></i>ホーム</a></li>
+                    <li class="{% block ac_profile %}{% endblock ac_profile %}"><a
+                            href="{% url 'home:auth_profile' %}"><i class="fas fa-id-badge"></i>プロフィール</a></li>
+                    {% if request.user.is_identified %}
+                    <li class="{% block ac_contact %}{% endblock ac_contact %}"><a
+                            href="{% url 'home:contact_create' %}"><i class="fas fa-envelope"></i>お問い合わせ</a></li>
+                    {% endif %}
+                </ul>
+                {% if request.user.is_staff %}
+                <span class="heading">Staff</span>
+                <ul class="list-unstyled">
+                    <li class="{% block ac_staff %}{% endblock ac_staff %}"><a href="{% url 'home:staff_menu' %}"><i
+                                class="fas fa-lock"></i>スタッフページ</a></li>
+                </ul>
+                {% endif %}
+                {% if request.user.is_admin %}
+                <span class="heading">Admin</span>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'admin:index' %}"><i class="fas fa-database"></i>管理サイト</a></li>
+                </ul>
+                {% endif %}
+            </nav>
+            <div class="content-inner">
+                <!-- Page Header-->
+                <nav class="breadcrumb mt-5 pt-5 pl-4 pb-4">
+                    {% block breadcrumb %}
+                    {% endblock breadcrumb %}
+                </nav>
+                <!-- Page Contents -->
+                <section class="contents pt-4">
+                    <div class="container-fluid">
+                        {% bootstrap_messages %}
+                        {% block contents %}
+                        {% endblock contents %}
+                    </div>
+                </section>
+                <!-- Page Footer-->
+                <footer class="main-footer">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p>Wakabayashi Yuya &copy; 2020</p>
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <p>Design by <a href="https://bootstrapious.com/p/admin-template"
+                                        class="external">Bootstrapious</a></p>
+                                <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript files-->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
+        integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"
+        integrity="sha512-UdIMMlVx0HEynClOIFSyOrPggomfhBKJE28LKl8yR3ghkgugPnG6iLfRfHwushZl1MOPSY6TsuBDGPK2X4zYKg=="
+        crossorigin="anonymous"></script>
+    <!-- Main File-->
+    <script src="{% static 'js/front.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    {% block extrajs %}
+    {% endblock extrajs %}
+</body>
+
+</html>

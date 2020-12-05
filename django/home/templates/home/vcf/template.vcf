@@ -1,0 +1,11 @@
+{% for user in user_list %}BEGIN:VCARD
+VERSION:3.0
+N:{{ user.last_name }};{{ user.first_name }};;;
+FN:{{ user.first_name }} {{ user.last_name }}
+X-PHONETIC-FIRST-NAME:{{ user.first_name_kana }}
+X-PHONETIC-LAST-NAME:{{ user.last_name_kana }}
+ORG:{% for dep in user.department_set.all %}{% if not forloop.first %}, {% endif %}{{ dep }}{% endfor %} - {{ user.grade }};
+EMAIL:{{ user.email }}
+TEL:{{ user.tel }}
+END:VCARD
+{% endfor %}

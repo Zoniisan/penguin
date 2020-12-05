@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+メッセージ一覧
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">メッセージ一覧</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>メッセージ一覧</h3>
+            </div>
+            <div class="card-body">
+                <p>あなたが受信したメッセージ一覧です。</p>
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover table-clickable">
+                        <thead>
+                            <tr>
+                                <th>未読</th>
+                                <th>件名</th>
+                                <th>担当</th>
+                                <th>受信日時</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in object_list %}
+                            <tr data-href="{% url 'home:message_detail' obj.message.id %}">
+                                <td>
+                                    {% if not obj.is_read %}
+                                    <span class="badge badge-danger">未読</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ obj.message.subject }}</td>
+                                <td>{{ obj.message.department }}</td>
+                                <td>{{ obj.message.create_datetime }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

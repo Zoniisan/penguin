@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+スタッフ管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:auth_user_list' %}" class="breadcrumb-item">ユーザー管理</a>
+<span class="breadcrumb-item active">{{ object.get_full_name }}</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ object.get_full_name }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <a class="btn btn-info" href="#"><i class="fas fa-bell"></i>&nbsp;メッセージ送信</a>
+                    <a class="btn btn-info" href="tel:{{ object.tel }}"><i class="fas fa-phone"></i>&nbsp;電話</a>
+                </div>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学生番号</th>
+                            <td>{{ object.stid }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">姓</th>
+                            <td>{{ object.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap"> 名</th>
+                            <td>{{ object.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">姓（かな）</th>
+                            <td>{{ object.last_name_kana }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">名（かな）</th>
+                            <td>{{ object.first_name_kana }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学部</th>
+                            <td>{{ object.get_faculty_display }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">学年</th>
+                            <td>{{ object.get_grade_display }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">メールアドレス</th>
+                            <td>{{ object.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">電話番号</th>
+                            <td>{{ object.tel }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">有効</th>
+                            <td>
+                                {% if object.is_active %}
+                                <span class="badge badge-pill badge-success">有効</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-danger">無効（BAN中）</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">権限</th>
+                            <td>
+                                {% if object.is_identified %}
+                                {% if object.is_admin %}
+                                <span class="badge badge-pill badge-danger">Admin</span>
+                                {% elif object.is_staff %}
+                                <span class="badge badge-pill badge-warning">Staff</span>
+                                {% else %}
+                                <span class="badge badge-pill badge-primary">Normal</span>
+                                {% endif %}
+                                {% else %}
+                                <span class="badge badge-pill badge-secondary">Not Identified</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">eptid</th>
+                            <td>{{ object.eptid }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">affiliation</th>
+                            <td>{{ object.get_affiliation_display }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-right">
+                <a class="btn btn-success" href="{% url 'home:auth_user_update' object.id %}">情報変更</a>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                    削除
+                </button>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">本当にユーザー情報を削除しますか？</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul>
+                                <li>ユーザー情報を削除すると、再びログインした際に同じ eptid が登録されます（Shibboleth 認証の場合）。</li>
+                                <li class="text-danger">BAN したい場合は「情報変更 > 有効」のチェックを外してください。</li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                            <a class="btn btn-success" href="{% url 'home:auth_user_update' object.id %}">情報変更</a>
+                            <a class="btn btn-danger" href="{% url 'home:auth_user_delete' object.id %}">削除</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

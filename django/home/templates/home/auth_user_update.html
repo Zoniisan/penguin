@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+個人情報更新
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:auth_user_list' %}" class="breadcrumb-item">ユーザー管理</a>
+<a href="{% url 'home:auth_user_detail' object.pk %}" class="breadcrumb-item">{{ object.get_full_name }}</a>
+<span class="breadcrumb-item active">情報変更</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>情報変更</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-success mb-0">確定</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+    {% endblock contents %}

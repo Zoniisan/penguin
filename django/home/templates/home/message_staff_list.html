@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+メッセージ管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">メッセージ管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>メッセージ管理</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-right mb-3">
+                    <a class="btn btn-success" href="{% url 'home:message_create' 'normal' %}" role="button">&nbsp;<i
+                            class="fa fa-plus"></i>送信</a>
+                </div>
+                <ul class="nav nav-tabs" id="depTab" role="tablist">
+                    {% for dep in department_list %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if forloop.first %} active{% endif %}" id="dep-{{ dep.id }}-tab"
+                            data-toggle="tab" href="#dep-{{ dep.id }}" role="tab" aria-controls="dep-{{ dep.id }}"
+                            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ dep.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content" id="depTabContent">
+                    {% for obj in object_dict %}
+                    <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="dep-{{ obj.department.id }}"
+                        role="tabpanel" aria-labelledby="dep-{{ obj.department.id }}-tab">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover table-clickable">
+                                <thead>
+                                    <tr>
+                                        <th>タイトル</th>
+                                        <th>宛先</th>
+                                        <th>送信者</th>
+                                        <th>送信日時</th>
+                                    </tr>
+                                </thead>
+                                {% for mes in obj.message_list %}
+                                <tr data-href="{% url 'home:message_staff_detail' mes.id %}">
+                                    <td scope="row">{{ mes.subject }}</td>
+                                    <td>{{ mes.to_summary }}</td>
+                                    <td>{{ mes.writer }}</td>
+                                    <td>{{ mes.create_datetime }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

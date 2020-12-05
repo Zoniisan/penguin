@@ -1,0 +1,23 @@
+{{ user.get_full_name }} 様
+
+スタッフよりお知らせがあります。
+この件についてのお問い合わせは、このメールに返信するのではなく、
+お問い合わせフォームに入力するか、
+{{ message.department.email }} にメールを送信してください。
+
+タイトル
+{{ message.subject }}
+
+本文
+{{ message.body }}
+
+（お問い合わせフォーム）
+{{ BASE_URL }}{% url 'home:contact_create' %}
+
+
+-------------------------------------
+{{ message.department }}
+{{ message.writer.get_short_name }}
+{{ message.department.email }}
+
+このメールは自動送信です。返信はできません。

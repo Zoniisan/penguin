@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+ユーザー管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">ユーザー管理</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+{% endblock extracss %}
+
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>ユーザー管理</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive text-nowrap">
+                    <table id="user" class="table table-hover table-clickable" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>学生番号</th>
+                                <th>姓</th>
+                                <th>名</th>
+                                <th>姓（かな）</th>
+                                <th>名（かな）</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#user').DataTable({
+            'serverSide': true,
+            'ajax': '/api/user/?format=datatables',
+            'columns': [{
+                    'data': 'stid'
+                },
+                {
+                    'data': 'last_name',
+                },
+                {
+                    'data': 'first_name'
+                },
+                {
+                    'data': 'last_name_kana'
+                },
+                {
+                    'data': 'first_name_kana'
+                },
+            ],
+            'createdRow': function (row, data, dataIndex) {
+                // data-hrefにURLを追加してから、クリック時にそちらへ遷移させる
+                var id = data.id
+                var urlForm = `/auth/user/detail/${id}`;
+                $(row).attr('data-href', urlForm)
+                    // クリックしたら遷移
+                    .click(function (e) {
+                        window.location = $(e.target).closest('tr').data('href');
+                    });
+            },
+        });
+    });
+</script>
+{% endblock extrajs %}

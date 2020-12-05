@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block headtitle %}
+404 Not Found
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active text-danger">404 Not Found</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="card">
+    <div class="card-header text-danger">
+        <h4>404 Not Found</h4>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">ページが見つかりません</h4>
+        <ul>
+            <li>原因例</li>
+            <ul>
+                <li>URL を間違えて入力した。</li>
+            </ul>
+            <li>解決策</li>
+            <ul>
+                <li>URL を間違えていないか確認してください。</li>
+            </ul>
+        </ul>
+    </div>
+</div>
+{% endblock contents %}

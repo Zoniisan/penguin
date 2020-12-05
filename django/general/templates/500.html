@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block headtitle %}
+500 Internal Server Error
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active text-danger">500 Internal Server Error</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="card">
+    <div class="card-header text-danger">
+        <h4>500 Internal Server Error</h4>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">内部エラー</h4>
+        <ul>
+            <li>原因例</li>
+            <ul>
+                <li>PENGUIN のバグ</li>
+            </ul>
+            <li>解決策</li>
+            <ul>
+                <li>念のためもう一度時間をおいてリロードしてください。</li>
+                <li>エラーログはシステム管理者に送信されています。対応をお待ちください。</li>
+            </ul>
+        </ul>
+    </div>
+</div>
+{% endblock contents %}

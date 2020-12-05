@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+メッセージ管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:message_staff_list' %}" class="breadcrumb-item">メッセージ管理</a>
+<span class="breadcrumb-item active">詳細</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>メッセージ詳細</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 text-right">
+                    <a class="btn btn-info" href="{% url 'home:message_staff_readlist' object.id %}">全宛先・既読状況</a>
+                </div>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">タイトル</th>
+                            <td>{{ object.subject }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">宛先</th>
+                            <td>{{ object.to_summary }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">本文</th>
+                            <td>{{ object.body|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信者</th>
+                            <td>{{ object.writer }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">部局担当</th>
+                            <td>{{ object.department }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信日時</th>
+                            <td>{{ object.create_datetime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block headtitle %}
+403 Permission Error
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active text-danger">403 Permission Error</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="card">
+    <div class="card-header text-danger">
+        <h4>403 Permission Error</h4>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">このページを閲覧する権限がありません</h4>
+        <ul>
+            <li>原因例</li>
+            <ul>
+                <li>一般ユーザーがスタッフ専用ページにアクセスしようとした。</li>
+                <li>参加していない企画のページにアクセスしようとした。</li>
+                <li>受付期間外に各種フォームに入力しようとした。</li>
+            </ul>
+            <li>解決策</li>
+            <ul>
+                <li>URL を間違えていないか確認してください。</li>
+            </ul>
+        </ul>
+    </div>
+</div>
+{% endblock contents %}

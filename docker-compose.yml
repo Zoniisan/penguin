@@ -1,0 +1,137 @@
+version: "3.8"
+
+services:
+    # サービス名は自由に設定
+    django:
+        # djangoディレクトリの中から`Dockerfile`を探す
+        build: ./django
+        # サービス起動後に入力されるコマンドを設定
+        command: >
+            sh -c "python manage.py migrate &&
+            python manage.py collectstatic --no-input &&
+            gunicorn penguin.wsgi:application --bind 0.0.0.0:8000"
+        # データを永続化させる場合の設定。`host:container`でパスを記載
+        volumes:
+            - ./django/:/usr/src/django/
+        # 開放するポートを指定。`host:container`でポートを記載
+        ports:
+            - 8000:8000
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+        # 接続するサービスを指定
+        depends_on:
+            - postgres
+            - redis
+
+    postgres:
+        # 公式からイメージをpull
+        image: postgres:11.4-alpine
+        # データベースの永続化
+        # ホストのディレクトリにマウントしない様に、先頭に`./`をつけない
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        env_file:
+            - ./.env_postgres
+
+    redis:
+        image: redis:latest
+        ports:
+            - 6379:6379
+        volumes:
+            - redis_data:/var/lib/redis/data
+        command: redis-server --appendonly yes
+
+    celery:
+        build:
+            context: ./django
+        command: celery -A penguin worker -l info
+        volumes:
+            - ./django/:/usr/src/django/
+        depends_on:
+            - django
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+
+    celery-beat:
+        build:
+            context: ./django
+        command: celery -A penguin beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+        volumes:
+            - ./django/:/usr/src/django/
+        depends_on:
+            - django
+        # 環境変数に設定するファイル
+        env_file:
+            - ./django/penguin/.env
+
+    https-portal:
+        image: steveltn/https-portal:1
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./django/static/:/var/www/vhosts/static.zuya.tokyo/
+        links:
+            - django
+        restart: always
+        environment:
+            DOMAINS: 'penguin.zuya.tokyo -> http://django:8000, wiki.zuya.tokyo -> http://growi:3000, static.zuya.tokyo'
+            STAGE: 'production'
+
+    growi:
+        build:
+            context: .
+            dockerfile: ./growi/Dockerfile
+        ports:
+            - 3000:3000
+        links:
+            - mongo:mongo
+            - elasticsearch:elasticsearch
+        depends_on:
+            - mongo
+            - elasticsearch
+        env_file:
+            - ./growi/.env_growi
+
+        command: "dockerize
+                    -wait tcp://mongo:27017
+                    -wait tcp://elasticsearch:9200
+                    -timeout 60s
+                    npm run server:prod"
+        restart: unless-stopped
+        volumes:
+            - growi_data:/data
+
+    mongo:
+        image: mongo:4.4
+        restart: unless-stopped
+        volumes:
+            - mongo_configdb:/data/configdb
+            - mongo_db:/data/db
+
+    elasticsearch:
+        build:
+            context: ./growi/elasticsearch
+            dockerfile: ./Dockerfile
+        environment:
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"  # increase amount if you have enough memory
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        restart: unless-stopped
+        volumes:
+            - es_data:/usr/share/elasticsearch/data
+            - ./growi/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+# トップレベルに書く「名前付きvolumes」は複数サービスから参照できる
+volumes:
+    postgres_data:
+    redis_data:
+    growi_data:
+    mongo_configdb:
+    mongo_db:
+    es_data:

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+メッセージ詳細
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:message_list' %}" class="breadcrumb-item">メッセージ一覧</a>
+<span class="breadcrumb-item active">詳細</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>メッセージ詳細</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">タイトル</th>
+                            <td>{{ object.subject }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">本文</th>
+                            <td>{{ object.body|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">部局担当</th>
+                            <td>{{ object.department }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信者</th>
+                            <td>{{ object.writer }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">受信日時</th>
+                            <td>{{ object.create_datetime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

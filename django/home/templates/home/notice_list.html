@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+お知らせ一覧
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">お知らせ管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>お知らせ管理</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    <strong>{{ datetime_now }}</strong>&nbsp;現在の掲載状況です。開始日時順が新しい順に表示します。
+                </div>
+                <div class="text-right mb-3">
+                    <a class="btn btn-success" href="{% url 'home:notice_create' %}" role="button">&nbsp;<i
+                            class="fa fa-plus"></i>追加</a>
+                </div>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="all-tab" data-toggle="tab" href="#all" role="tab"
+                            aria-controls="all" aria-selected="true">全て</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="active-tab" data-toggle="tab" href="#active" role="tab"
+                            aria-controls="active" aria-selected="false">掲載中のみ</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover table-clickable">
+                                <thead>
+                                    <tr>
+                                        <th>状態</th>
+                                        <th>タイトル</th>
+                                        <th>開始</th>
+                                        <th>終了</th>
+                                        <th>担当</th>
+                                    </tr>
+                                </thead>
+                                {% for obj in notice_list %}
+                                <tr data-href="{% url 'home:notice_update' obj.id %}">
+                                    <td scope="row">
+                                        {% if obj.is_active %}
+                                        <span class="badge badge-success badge-pill">掲載中</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ obj.subject }}</td>
+                                    <td>{{ obj.start_datetime }}</td>
+                                    <td>{{ obj.finish_datetime }}</td>
+                                    <td>{{ obj.writer }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="active" role="tabpanel" aria-labelledby="active-tab">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover table-clickable">
+                                <thead>
+                                    <tr>
+                                        <th>状態</th>
+                                        <th>タイトル</th>
+                                        <th>開始</th>
+                                        <th>終了</th>
+                                        <th>担当</th>
+                                    </tr>
+                                </thead>
+                                {% for obj in active_notice_list %}
+                                <tr data-href="{% url 'home:notice_update' obj.id %}">
+                                    <td scope="row">
+                                        {% if obj.is_active %}
+                                        <span class="badge badge-success badge-pill">掲載中</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ obj.subject }}</td>
+                                    <td>{{ obj.start_datetime }}</td>
+                                    <td>{{ obj.finish_datetime }}</td>
+                                    <td>{{ obj.writer }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

@@ -1,0 +1,18 @@
+# env files
+django/penguin/.env
+.env_postgres
+
+# pipfile lock
+django/Pipfile.lock
+
+# static files
+django/static
+
+# vscode conf
+.vscode
+
+# growi (wiki)
+growi
+
+# venv for python
+.venv

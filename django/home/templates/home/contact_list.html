@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+お問い合わせ管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">お問い合わせ管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>お問い合わせ管理</h3>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs mb-3" id="kindTab" role="tablist">
+                    {% for kind in kind_list %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if forloop.first %} active{% endif %}" id="kind-{{ kind.id }}-tab"
+                            data-toggle="tab" href="#kind-{{ kind.id }}" role="tab" aria-controls="kind-{{ kind.id }}"
+                            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                            {{ kind.name }}
+                            {% if not kind.is_all_finished %}
+                            <span class="badge badge-pill badge-danger">未対応</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content" id="kindTabContent">
+                    {% for obj in object_list %}
+                    <div class="tab-pane fade{% if forloop.first %} show active{% endif %}" id="kind-{{ obj.kind.id }}"
+                        role="tabpanel" aria-labelledby="kind-{{ obj.kind.id }}-tab">
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading">このお問い合わせを閲覧できる部局担当は、次の通りです。</h4>
+                            <ul>
+                                {% for dep in obj.kind.department.all %}
+                                <li>{{ dep }}</li>
+                                {% endfor %}
+                            </ul>
+                            <p class="mb-0">
+                                ただし、URL を共有することで担当外のスタッフも閲覧できるようになります。
+                            </p>
+                        </div>
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-hover table-clickable">
+                                <thead>
+                                    <tr>
+                                        <th>対応</th>
+                                        <th>本文</th>
+                                        <th>送信者</th>
+                                        <th>送信日時</th>
+                                    </tr>
+                                </thead>
+                                {% for contact in obj.list %}
+                                <tr data-href="{% url 'home:contact_detail' contact.id %}">
+                                    <td scope="row">
+                                        {% if not contact.is_finished %}
+                                        <span class="badge badge-pill badge-danger">未対応</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ contact.body|truncatechars:15 }}</td>
+                                    <td>{{ contact.writer }}</td>
+                                    <td>{{ contact.create_datetime }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

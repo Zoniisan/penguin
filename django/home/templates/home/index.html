@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load message_alert %}
+
+{% block headtitle %}
+ホーム
+{% endblock headtitle %}
+
+{% block ac_home %}
+active
+{% endblock ac_home %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active">ホーム</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<!-- Not Production Alert -->
+{% if not request.user.is_authenticated %}
+<div class="alert alert-danger alert-dismissible" role="alert">
+    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i>&nbsp;「京都大学11月祭」関連の事項とは一切関係ありません</h4>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <ul class="mb-0">
+        <li>このサイトは PENGUIN を模した開発成果物です。</li>
+        <li>11 月祭に関する情報や、<strong>個人情報は絶対に入力しない</strong>でください。</li>
+        <li>このサイトに入力された情報は誰でも閲覧できます。</li>
+        <li><strong>メール送信機能は無効にしています</strong>。slack 送信機能は実在するあるワークスペースに送信されます。</li>
+        <li>
+            <a href="{% url 'home:auth_login' %}">ログイン</a>する際は eptid を入力します。
+            <ul>
+                <li>一般学生としてログイン: e001 - e103</li>
+                <li>スタッフとしてログイン: e201 - e232</li>
+                <li>システム管理者としてログイン: e000</li>
+                <li>教職員としてログイン: e301</li>
+                <li>ただし、誰でもユーザー情報を更新・削除できるのでここに記載されている内容と現況が異なる場合があります。</li>
+            </ul>
+        </li>
+        <li>詳しくは <a href="https://wiki.zuya.tokyo">Wiki</a> をご覧ください。</li>
+    </ul>
+</div>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+<!-- Message Alert -->
+{% message_alert request.user.id %}
+{% if unread_message_count %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-bell"></i>&nbsp;未読メッセージがあります。 <a href="{% url 'home:message_list' %}">必ず確認してください</a>。
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Identify Alert -->
+{% if not request.user.is_identified %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-user-tie"></i>&nbsp;企画出展などの手続きを行うためには<a
+                href="{% url 'home:auth_identify_token_create' %}">個人情報の入力</a>が必要です。
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- Notice -->
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-bullhorn"></i>&nbsp;お知らせ</h3>
+            </div>
+            <div class="card-body">
+                <div id="carouselId" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner" role="listbox">
+                        {% for notice in notice_list %}
+                        <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                            <h4 class="card-title">{{ notice.subject }}</h4>
+                            <p class="card-text">{{ notice.body|urlize }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="mb-0">お知らせはありません</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-primary" role="alert">
+    <a href="{% url 'home:auth_login' %}">ログイン</a>してください。
+</div>
+{% endif %}
+{% endblock contents %}

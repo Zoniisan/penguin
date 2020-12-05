@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+メールアドレス入力
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">メールアドレス入力</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>メールアドレス入力</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary" role="alert">
+                        <h4 class="alert-heading">メールアドレスを入力してください</h4>
+                        <ul class="mb-0">
+                            <li>企画出展などの手続きを行うためには、個人情報の入力が必要です。</li>
+                            <li>一度確定した個人情報は、原則変更できません。</li>
+                            <li>メールアドレスを入力すると、そのアドレス宛にメールが届きます。</li>
+                            <li>そのメールに記載されたリンクにアクセスし、情報の入力を続けてください。</li>
+                        </ul>
+                    </div>
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-success mb-0">メールを送信</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

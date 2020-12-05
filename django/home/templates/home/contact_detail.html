@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+お問い合わせ詳細
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:contact_list' %}" class="breadcrumb-item">お問い合わせ管理</a>
+<span class="breadcrumb-item active">詳細</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>メッセージ詳細</h3>
+            </div>
+            <div class="card-body">
+                {% if not object.is_finished %}
+                <div class="alert alert-danger" role="alert">
+                    このお問合わせにはまだ対応していません。
+                </div>
+                {% endif %}
+                <div class="text-right mb-3">
+                    <!-- Button trigger modal -->
+                    {% if not object.is_finished %}
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modelId">
+                        対応完了
+                    </button>
+                    {% endif %}
+                    <a class="btn btn-success" href="{% url 'home:message_create' 'contact' object.id %}">返信</a>
+                </div>
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">種別</th>
+                            <td>{{ object.kind }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">本文</th>
+                            <td>{{ object.body|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信者</th>
+                            <td>{{ object.writer }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">受信日時</th>
+                            <td>{{ object.create_datetime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>連絡先情報</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">メールアドレス</th>
+                            <td>{{ object.writer.email }}</td>
+                            <td><a class="btn btn-primary" href="mailto:{{ object.writer.email }}" role="button"><i
+                                        class="fas fa-envelope"></i>&nbsp;メール</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">電話番号</th>
+                            <td>{{ object.writer.tel }}</td>
+                            <td><a class="btn btn-primary" href="tel:{{ object.writer.tel }}" role="button"><i
+                                        class="fas fa-phone"></i>&nbsp;電話</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">確認</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        対応完了にしますか？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                        <a class="btn btn-primary" href="{% url 'home:contact_finish' object.id %}"
+                            role="button">対応完了</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% for message in contact.message.all %}
+        <div class="card">
+            <div class="card-header">
+                <h3>返信（{{ forloop.revcounter }}）</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">タイトル</th>
+                            <td>{{ message.subject }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">本文</th>
+                            <td>{{ message.body|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">部局担当</th>
+                            <td>{{ message.department }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">送信者</th>
+                            <td>{{ message.writer }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">受信日時</th>
+                            <td>{{ message.create_datetime }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock contents %}

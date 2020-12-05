@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block headtitle %}
+お問い合わせ種別一覧
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">お問い合わせ種別管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>お問い合わせ種別一覧</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    各行をクリックすると情報の更新、ドラッグすると順序の更新が可能です。
+                    順序の更新を反映する場合は「順序変更」を押してください。
+                </div>
+                <div class="text-right mb-3">
+                    <form method="post" id="sortable-form">
+                        {% csrf_token %}
+                        {{ form }}
+                        <button type="submit" class="btn btn-info">順序変更</button>
+                        <a class="btn btn-success" href="{% url 'home:contactkind_create' %}">&nbsp;<i
+                                class="fa fa-plus"></i>追加</a>
+                    </form>
+                </div>
+
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover table-clickable">
+                        <thead>
+                            <tr>
+                                <th>名前</th>
+                                <th>slack</th>
+                                <th>部局担当</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sortable-tbody">
+                            {% for obj in object_list %}
+                            <tr data-href="{% url 'home:contactkind_update' obj.id %}" id="obj_{{ obj.id }}">
+                                <td>{{ obj.name }}</td>
+                                <td>{{ obj.verbose_slack_ch }}</td>
+                                <td>{{ obj.department_str }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="{% static 'js/custom_sortable.js' %}"></script>
+{% endblock extrajs %}

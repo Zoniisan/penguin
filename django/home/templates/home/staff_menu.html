@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+スタッフページ
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">スタッフページ</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>スタッフページ</h3>
+            </div>
+            <div class="card-body">
+                {% if request.user.is_admin %}
+                <div class="alert alert-danger" role="alert">
+                    あなたはシステム管理者です。
+                </div>
+                {% else %}
+                <div class="alert alert-primary" role="alert">
+                    <h4 class="alert-heading">あなたが所属している部局担当は次のとおりです。</h4>
+                    <ul class="mb-0">
+                        {% for dep in request.user.department_list %}
+                        <li>{{ dep.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <table class="table table-hover table-clickable">
+                    <thead>
+                        <tr>
+                            <th>機能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-href="{% url 'home:staff_member' %}">
+                            <td scope="row">
+                                スタッフ一覧&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
+                                <small class="text-muted">スタッフを部局担当別に表示します。連絡先のダウンロードも可能です。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:contact_list' %}">
+                            <td scope="row">
+                                お問い合わせ管理&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
+                                <small class="text-muted">一般ユーザーから届いたお問い合わせを管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:message_staff_list' %}">
+                            <td scope="row">
+                                メッセージ管理&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
+                                <small class="text-muted">スタッフからユーザーに送信するメッセージを管理します。</small>
+                            </td>
+                        </tr>
+                        {% if request.user.is_admin %}
+                        <tr data-href="{% url 'home:auth_user_list' %}">
+                            <td scope="row">
+                                ユーザー管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">PENGUIN に登録されているユーザー情報を管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:notice_list' %}">
+                            <td scope="row">
+                                お知らせ管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">トップページに表示されるお知らせを管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:department_list' %}">
+                            <td scope="row">
+                                部局担当管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">スタッフが所属する部局担当を管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:contactkind_list' %}">
+                            <td scope="row">
+                                お問い合わせ種別管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">お問い合わせの種別を管理します。</small>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endblock contents %}

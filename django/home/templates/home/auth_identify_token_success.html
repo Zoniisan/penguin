@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+メールアドレス入力完了
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">メールアドレス入力</span>
+<span class="breadcrumb-item active">完了</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>メールアドレス入力完了</h3>
+                </div>
+                <div class="card-body">
+                    <h4>まだ手続きは完了していません。</h4>
+                    <p class="mb-0">入力されたメールアドレス宛にメールを送信しました。
+                        メールに記載された URL にアクセスし、手続きを進めてください。</p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

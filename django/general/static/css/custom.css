@@ -1,0 +1,15 @@
+.sidebar-fixed {
+    /* base.html サイドバーを固定 */
+    position: fixed;
+    height: 100%;
+}
+
+table.table-clickable tr[data-href] {
+    /* table-clickable でリンクを張る時、ポインターを変更 */
+    cursor: pointer;
+}
+
+span.select2-selection {
+    /* select2 利用時、曽木状態の幅を調整 */
+    min-width: 40vw;
+}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+個人情報入力
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">個人情報入力</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>個人情報入力</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-primary" role="alert">
+                        <h4 class="alert-heading">個人情報を入力してください</h4>
+                        <ul class="mb-0">
+                            <li>企画出展などの手続きを行うためには、個人情報の入力が必要です。</li>
+                            <li>一度確定した個人情報は、原則変更できません。</li>
+                        </ul>
+                    </div>
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modelId">
+                        確定
+                    </button>
+                    {% endbuttons %}
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">確認</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>本当に確定しますか？</p>
+                            <p class="text-danger">一度確定すると、原則変更はできません。</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                            <button type="submit" class="btn btn-success">確定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
