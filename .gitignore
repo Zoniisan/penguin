@@ -16,3 +16,6 @@ growi
 
 # venv for python
 .venv
+
+# ssl certs
+ssl_certs
