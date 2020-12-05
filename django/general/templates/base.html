@@ -55,6 +55,7 @@
                                 <!-- Subtitle -->
                                 <li class="nav-item d-none d-xl-block">PErsonal New-generation Graphic User Interface
                                     for November festival</li>
+                                {% if request.user.is_authenticated %}
                                 <!-- Notifications-->
                                 {% message_alert request.user.id %}
                                 <li class="nav-item">
@@ -66,6 +67,7 @@
                                         {% endif %}
                                     </a>
                                 </li>
+                                {% endif %}
                                 <!-- Logout    -->
                                 {% if request.user.is_authenticated %}
                                 <li class="nav-item"><a href="{% url 'home:auth_logout' %}" class="nav-link logout">
@@ -116,8 +118,10 @@
                 <ul class="list-unstyled">
                     <li class="{% block ac_home %}{% endblock ac_home %}"><a href="{% url 'home:index' %}"><i
                                 class="fa fa-home"></i>ホーム</a></li>
+                    {% if request.user.is_authenticated %}
                     <li class="{% block ac_profile %}{% endblock ac_profile %}"><a
                             href="{% url 'home:auth_profile' %}"><i class="fas fa-id-badge"></i>プロフィール</a></li>
+                    {% endif %}
                     {% if request.user.is_identified %}
                     <li class="{% block ac_contact %}{% endblock ac_contact %}"><a
                             href="{% url 'home:contact_create' %}"><i class="fas fa-envelope"></i>お問い合わせ</a></li>
