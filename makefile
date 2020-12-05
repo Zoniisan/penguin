@@ -8,4 +8,6 @@ install:        django/Pipfile.lock
 
 start:;			docker-compose -f docker-compose.dev.yml up --build
 
+stop:;			docker-compose -f docker-compose.dev.yml down
+
 loaddata:;		docker-compose -f docker-compose.dev.yml exec django python manage.py loaddata home/fixtures/data.json

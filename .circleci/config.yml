@@ -8,20 +8,17 @@ jobs:
       # Djangoのテストを実行
       - checkout
       - run:
-          name: docker-compose up
-          command: docker-compose up -d
+          name: make
+          command: make
       - run:
-          name: sleep for launch db to migrate at Django
-          command: sleep 10
-      - run:
-          name: migrate
-          command: docker-compose run django python manage.py migrate
+          name: start
+          command: make start
       - run:
           name: test
-          command: docker-compose run django python manage.py test
+          command: docker-compose -f docker-compose.dev.yml run django python manage.py test
       - run:
-          name: docker-compose down
-          command: docker-compose down
+          name: stop
+          command: make stop
   # サーバーにSSH接続し、デプロイを実行
   deploy:
     machine:
