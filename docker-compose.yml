@@ -78,7 +78,7 @@ services:
             - django
         restart: always
         environment:
-            DOMAINS: 'penguin.zuya.tokyo -> http://django:8000, wiki.zuya.tokyo -> http://growi:3000, static.zuya.tokyo'
+            DOMAINS: 'dev-penguin.zuya.tokyo -> http://django:8000, dev-wiki.zuya.tokyo -> http://growi:3000, dev-static.zuya.tokyo'
             STAGE: 'staging'
             CLIENT_MAX_BODY_SIZE: '100M'
 
