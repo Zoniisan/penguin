@@ -79,6 +79,7 @@ services:
         environment:
             DOMAINS: 'penguin.zuya.tokyo -> http://django:8000, wiki.zuya.tokyo -> http://growi:3000, static.zuya.tokyo'
             STAGE: 'production'
+            CLIENT_MAX_BODY_SIZE: '100M'
 
     growi:
         build:
