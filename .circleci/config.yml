@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run:
           name: make
-          command: make
+          command: pwd && ls && make
       - run:
           name: start
           command: make start
