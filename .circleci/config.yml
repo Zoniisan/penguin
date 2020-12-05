@@ -9,16 +9,16 @@ jobs:
       - checkout
       - run:
           name: make
-          command: pwd && ls && make
+          command: make
       - run:
           name: start
-          command: make start
+          command: docker-compose -f docker-compose.dev.yml up --build -d
       - run:
           name: test
           command: docker-compose -f docker-compose.dev.yml run django python manage.py test
       - run:
           name: stop
-          command: make stop
+          command: docker-compose -f docker-compose.dev.yml down
   # サーバーにSSH接続し、デプロイを実行
   deploy:
     machine:

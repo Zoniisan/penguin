@@ -1,7 +1,11 @@
-all:			program
+ENV = django/penguin/.env
+ENVP = .env_postgres
 
-program:		django/penguin/.env .env_postgres
-				cp setup/.sample.env django/penguin/.env && cp setup/.sample.env_postgres .env_postgres
+init:			${ENV} ${ENVP}
+
+${ENV}:;		cp setup/.sample.env django/penguin/.env
+
+${ENVP}:;		cp setup/.sample.env_postgres .env_postgres
 
 install:        django/Pipfile.lock
 				cd django && pipenv install --dev && cd ..
