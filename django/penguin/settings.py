@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'rest_framework_datatables',
 
     # penguin
-    'home'
+    'home',
+    'theme'
 ]
 
 MIDDLEWARE = [
