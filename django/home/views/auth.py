@@ -62,7 +62,8 @@ class IdentifyTokenCreateView(
             'home/mail/identify_token.html',
             {
                 'token': token,
-                'BASE_URL': settings.BASE_URL
+                'BASE_URL': settings.BASE_URL,
+                'next_url': self.request.GET.get('next')
             }
         )
 
@@ -83,7 +84,9 @@ class IdentifyTokenSuccessView(
     template_name = 'home/auth_identify_token_success.html'
 
 
-class IdentifyView(generic.UpdateView):
+class IdentifyView(
+    mixins.NotIdentifiedOnlyMixin, generic.UpdateView
+):
     """個人情報入力
 
     IdentifyTokenView によって送信されたメールに記載された URL にアクセス
@@ -135,6 +138,11 @@ class IdentifyView(generic.UpdateView):
         messages.success(
             self.request, '個人情報の入力が完了しました！'
         )
+
+        # GET パラメータにリダイレクト先が含まれている場合はそちらにリダイレクト
+        next_url = self.request.GET.get('next')
+        if next_url:
+            self.success_url = next_url
 
         return super().form_valid(form)
 

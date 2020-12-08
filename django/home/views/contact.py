@@ -9,7 +9,7 @@ from home.models import Contact, ContactKind
 from penguin import mixins
 
 
-class CreateView(mixins.IdentifiedOnlyMixin, generic.CreateView):
+class CreateView(mixins.RedirectIfNotIdentified, generic.CreateView):
     template_name = 'home/contact_create.html'
     model = Contact
     form_class = ContactForm
