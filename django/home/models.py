@@ -27,6 +27,14 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def staff_list(self):
+        """スタッフ一覧を返す
+
+        Returns:
+            queryset<User>: スタッフ一覧
+        """
+        return User.objects.filter(department__isnull=False)
+
 
 class User(AbstractBaseUser):
     class Meta:

@@ -81,7 +81,7 @@ class UserForm(forms.ModelForm):
         fields = (
             'stid', 'email', 'tel', 'last_name', 'first_name',
             'last_name_kana', 'first_name_kana',
-            'faculty', 'grade', 'is_active', 'is_admin',
+            'faculty', 'grade', 'is_active',
             'affiliation'
         )
 
@@ -114,3 +114,11 @@ class ContactKindForm(forms.ModelForm):
         widgets = {
             'department': forms.CheckboxSelectMultiple
         }
+
+
+class AdminForm(forms.Form):
+    admin_list = forms.ModelMultipleChoiceField(
+        label='システム管理者',
+        queryset=User.objects.staff_list(),
+        widget=UserMultipleWidget
+    )
