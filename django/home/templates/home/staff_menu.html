@@ -60,6 +60,14 @@ active
                                 <small class="text-muted">スタッフからユーザーに送信するメッセージを管理します。</small>
                             </td>
                         </tr>
+                        {% if is_theme_staff %}
+                        <tr data-href="{% url 'theme:staff_menu' %}">
+                            <td scope="row">
+                                統一テーマ案投票管理&nbsp;<span class="badge badge-pill badge-info">Regulated</span><br>
+                                <small class="text-muted">統一テーマ案投票について管理します。</small>
+                            </td>
+                        </tr>
+                        {% endif %}
                         {% if request.user.is_admin %}
                         <tr data-href="{% url 'home:auth_user_list' %}">
                             <td scope="row">

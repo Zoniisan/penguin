@@ -2,6 +2,7 @@ import datetime
 import uuid
 
 from django.db import models
+from home.models import User
 
 
 class ThemeManager(models.Manager):
@@ -122,14 +123,20 @@ class VoteSchedule(models.Model):
     def __str__(self):
         return self.name
 
-    def is_active(self):
-        """投票期間内かどうかを判定
+    def get_status(self):
+        """投票期間の状態を判定
 
         Returns:
-            bool: 投票期間内なら True
+            str: 'pending': 開始前, 'active': 投票中, 'finished': 終了
         """
         now = datetime.datetime.now()
-        return self.start_datetime <= now and self.finish_datetime >= now
+
+        if now < self.start_datetime:
+            return 'pending'
+        elif self.start_datetime <= now and now <= self.finish_datetime:
+            return 'active'
+        else:
+            return 'finished'
 
     id = models.UUIDField(
         primary_key=True,
@@ -148,6 +155,11 @@ class VoteSchedule(models.Model):
 
     finish_datetime = models.DateTimeField(
         verbose_name='終了日時'
+    )
+
+    theme_list = models.ManyToManyField(
+        'theme.Theme',
+        verbose_name='統一テーマ案'
     )
 
 
@@ -229,16 +241,25 @@ class Eptid(models.Model):
 
 
 class ThemeStaffManager(models.Manager):
-    def theme_staff_check(user):
+    def check_perm(self, user):
         """あるユーザーが統一テーマ担当スタッフかどうかを判定
 
         Args:
             user(User): ユーザー
         Returns:
-            bool: 担当スタッフなら Ture
+            bool: 担当スタッフなら Ture (システム管理者も True)
         """
-        return user.is_authenticated \
-            and ThemeStaff.objects.filter(user=user).exists()
+        return user.is_authenticated and (
+            ThemeStaff.objects.filter(user=user).exists() or user.is_admin
+        )
+
+    def all_list(self):
+        """統一テーマ管理スタッフを全て求める
+
+        Returns:
+            queryset<User>: 統一テーマ管理スタッフのクエリセット
+        """
+        return User.objects.filter(themestaff__isnull=False)
 
 
 class ThemeStaff(models.Model):

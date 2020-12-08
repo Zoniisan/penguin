@@ -19,6 +19,7 @@ from django.urls import include, path
 urlpatterns = [
     # penguin
     path('', include('home.urls')),
+    path('theme/', include('theme.urls')),
 
     # admin
     path('admin/', admin.site.urls),

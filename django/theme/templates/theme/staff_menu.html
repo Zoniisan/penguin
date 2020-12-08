@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+統一テーマ案投票管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">統一テーマ案投票管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案投票管理</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>状態</th>
+                            <th>項目</th>
+                            <th>期間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td scope="row"><span class="badge badge-pill badge-secondary">無効</span></td>
+                            <td>提出</td>
+                            <td>未設定</td>
+                            <td>
+                                <a class="btn btn-primary" href="#" role="button">設定</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td scope="row"></td>
+                            <td colspan="2" class="text-danger">投票日程を追加する場合は、まず提出期間を設定してください</td>
+                            <td>
+                                <a href="#" class="btn btn-success disabled" role="button">日程追加</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案投票担当スタッフ一覧</h3>
+            </div>
+            <div class="card-body">
+                <p>このページを閲覧できるのは、統一テーマ案投票管理スタッフ（とシステム管理者）のみです。</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>統一テーマ案投票担当スタッフ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in theme_staff_list %}
+                        <tr>
+                            <td scope="row">{{ user }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-right">
+                <a class="btn btn-danger" href="{% url 'theme:staff_theme_staff' %}" role="button">統一テーマ案投票担当スタッフ管理</a>
+            </div>
+        </div>
+    </div>
+    {% endblock contents %}
