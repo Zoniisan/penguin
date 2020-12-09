@@ -6,6 +6,16 @@ from home.models import (Contact, ContactKind, Department, IdentifyToken,
                          Message, Notice, User)
 
 
+class UserWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "stid__icontains",
+        "last_name__icontains",
+        "first_name__icontains",
+        "last_name_kana__icontains",
+        "first_name_kana__icontains",
+    ]
+
+
 class UserMultipleWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
         "stid__icontains",

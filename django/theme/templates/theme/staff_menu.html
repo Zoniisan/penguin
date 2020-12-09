@@ -22,35 +22,59 @@ active
                 <h3>統一テーマ案投票管理</h3>
             </div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>状態</th>
-                            <th>項目</th>
-                            <th>期間</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td scope="row"><span class="badge badge-pill badge-secondary">無効</span></td>
-                            <td>提出</td>
-                            <td>未設定</td>
-                            <td>
-                                <a class="btn btn-primary" href="#" role="button">設定</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td scope="row"></td>
-                            <td colspan="2" class="text-danger">投票日程を追加する場合は、まず提出期間を設定してください</td>
-                            <td>
-                                <a href="#" class="btn btn-success disabled" role="button">日程追加</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>状態</th>
+                                <th>項目</th>
+                                <th>期間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">
+                                    {% if submit_schedule_is_active %}
+                                    <span class="badge badge-pill badge-success">有効</span>
+                                    {% else %}
+                                    <span class="badge badge-pill badge-secondary">無効</span>
+                                    {% endif %}
+                                </td>
+                                <td>提出</td>
+                                <td>
+                                    {% if submit_schedule %}
+                                    {{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}
+                                    {% else %}
+                                    未設定
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="btn btn-success" href="{% url 'theme:submit_schedule' %}"
+                                        role="button">日程設定</a>
+                                    <a class="btn btn-primary" href="{% url 'theme:submit_list' %}"
+                                        role="button">提出案一覧</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td scope="row"></td>
+                                {% if submit_schedule %}
+                                <td colspan="2">投票日程を追加する場合は、右のボタンを押してください</td>
+                                <td><a href="#" class="btn btn-success" role="button">日程追加</a></td>
+                                {% else %}
+                                <td colspan="2" class="text-danger">投票日程を追加する場合は、まず提出日程を設定してください</td>
+                                <td><a href="#" class="btn btn-success disabled" role="button">日程追加</a></td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl">
         <div class="card">
             <div class="card-header">
                 <h3>統一テーマ案投票担当スタッフ一覧</h3>
@@ -77,4 +101,38 @@ active
             </div>
         </div>
     </div>
-    {% endblock contents %}
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header">
+                <h3>slack ch.</h3>
+            </div>
+            <div class="card-body">
+                <p>統一テーマ案が提出されたときに通知する slack ch. を指定します。</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>slack ch.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in theme_staff_list %}
+                        <tr>
+                            <td scope="row">
+                                {% if verbose_slack_ch %}
+                                {{ verbose_slack_ch }}
+                                {% else %}
+                                未設定
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-right">
+                <a class="btn btn-primary" href="{% url 'theme:staff_theme_slack' %}" role="button">slack ch. 設定</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

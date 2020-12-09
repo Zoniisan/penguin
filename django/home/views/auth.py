@@ -202,7 +202,6 @@ class UserDeleteView(mixins.AdminOnlyMixin, generic.RedirectView):
     同じ eptid が記録される。BAN する場合は削除ではなく User.is_active = False
     とすること。
     """
-    permanent = True
     pattern_name = 'home:auth_user_list'
 
     def get_redirect_url(self, *args, **kwargs):
@@ -244,7 +243,6 @@ class LogoutView(generic.RedirectView):
 
     local 認証の場合は logout(request) でログアウトできる
     """
-    permanent = True
     pattern_name = 'home:index'
 
     def get_redirect_url(self, *args, **kwargs):

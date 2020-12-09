@@ -16,7 +16,7 @@ class ThemeManager(models.Manager):
             bool: 提出可能であれば True
         """
         return (
-            user.is_authenticated
+            user.is_authenticated and user.is_identified
         ) and (
             not Theme.objects.filter(writer=user).exists()
         )
@@ -40,8 +40,8 @@ class Theme(models.Model):
 
     theme = models.CharField(
         verbose_name='統一テーマ案',
-        max_length=50,
-        help_text='50文字以内で入力してください'
+        max_length=100,
+        help_text='100文字以内で入力してください'
     )
 
     description = models.CharField(
@@ -53,12 +53,36 @@ class Theme(models.Model):
     writer = models.OneToOneField(
         'home.User',
         verbose_name='投稿者',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='theme_writer'
     )
 
     create_datetime = models.DateTimeField(
         verbose_name='投稿日時',
         auto_now_add=True
+    )
+
+    update_datetime = models.DateTimeField(
+        verbose_name='最終編集日時',
+        auto_now=True
+    )
+
+    submit_staff = models.ForeignKey(
+        'home.User',
+        verbose_name='強制提出スタッフ',
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        help_text='強制提出操作を行った場合、担当したスタッフが記録されます',
+        related_name='theme_submit_staff'
+    )
+
+    update_staff = models.ForeignKey(
+        'home.User',
+        verbose_name='最終編集スタッフ',
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        help_text='編集操作を行った場合、担当したスタッフが記録されます',
+        related_name='theme_update_staff'
     )
 
 
@@ -282,4 +306,42 @@ class ThemeStaff(models.Model):
         'home.User',
         verbose_name='ユーザー',
         on_delete=models.CASCADE
+    )
+
+
+class ThemeSlack(models.Model):
+    class Meta:
+        verbose_name = '統一テーマ案slack'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.slack_ch
+
+    def verbose_slack_ch(self):
+        """slack_ch を # つきで表示
+
+        Returns:
+            str: #channel
+        """
+        return '#{0}'.format(self.slack_ch)
+
+    def save(self, **kwargs):
+        """このインスタンスはたかだか 1 件のみ存在
+
+        セーブ前に必ず全削除する
+        """
+        # インスタンス全削除
+        ThemeSlack.objects.all().delete()
+        super().save(**kwargs)
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    slack_ch = models.CharField(
+        verbose_name='Slack_ch',
+        max_length=50,
+        help_text='# は除いて登録してください'
     )

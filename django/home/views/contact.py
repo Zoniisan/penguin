@@ -97,7 +97,6 @@ class FinishView(mixins.StaffOnlyMixin, generic.RedirectView):
     となるが、そうでなくともこの View にアクセスすれば is_finished = True
     となる。
     """
-    permanent = True
     pattern_name = 'home:contact_detail'
 
     def get_redirect_url(self, *args, **kwargs):
