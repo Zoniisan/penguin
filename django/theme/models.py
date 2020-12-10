@@ -30,6 +30,16 @@ class Theme(models.Model):
     def __str__(self):
         return self.theme
 
+    def get_count(self, vote_schedule):
+        """投票日程ごとに票数を計算
+
+        Args:
+            vote_schedule(VoteSchedule): 投票日程
+        Returns:
+            int: 獲得票数
+        """
+        return Vote.objects.filter(theme=self, schedule=vote_schedule).count()
+
     objects = ThemeManager()
 
     id = models.UUIDField(
@@ -88,15 +98,15 @@ class Theme(models.Model):
 
 class SubmitScheduleManager(models.Manager):
     def is_active(self):
-        """提出期間内かどうかを判定
+        """提出日程内かどうかを判定
 
         Returns:
-            bool: 提出期間内なら True
+            bool: 提出日程内なら True
         """
         try:
             obj = SubmitSchedule.objects.get()
         except SubmitSchedule.DoesNotExist:
-            # そもそもオブジェクトが存在しない場合は提出期間外
+            # そもそもオブジェクトが存在しない場合は提出日程外
             return False
 
         # 現在日時
@@ -107,11 +117,11 @@ class SubmitScheduleManager(models.Manager):
 
 class SubmitSchedule(models.Model):
     class Meta:
-        verbose_name = '提出期間'
+        verbose_name = '提出日程'
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return '提出期間'
+        return '提出日程'
 
     def save(self, **kwargs):
         """このインスタンスはたかだか 1 件のみ存在
@@ -162,6 +172,20 @@ class VoteSchedule(models.Model):
         else:
             return 'finished'
 
+    def can_vote_check(self, user):
+        """投票できるかどうかを判定
+
+        投票済みでなければ True
+
+        Args:
+            user(User): ユーザー
+        Returns:
+            bool: 投票可能なら True
+        """
+        return user.is_authenticated and not Eptid.objects.filter(
+            schedule=self, eptid=user.eptid
+        ).exists()
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -171,6 +195,11 @@ class VoteSchedule(models.Model):
     name = models.CharField(
         verbose_name='名前',
         max_length=50
+    )
+
+    description = models.CharField(
+        verbose_name='説明文',
+        max_length=50, blank=True, null=True
     )
 
     start_datetime = models.DateTimeField(
@@ -219,23 +248,6 @@ class Vote(models.Model):
     )
 
 
-class EptidManager(models.Manager):
-    def can_vote(self, schedule, user):
-        """投票できるかどうかを判定
-
-        投票済みでなければ True
-
-        Args:
-            schedule(VoteSchedule): 投票期間
-            user(User): ユーザー
-        Returns:
-            bool: 投票可能なら True
-        """
-        return user.is_authenticated and not Eptid.obejcts.filter(
-            schedule=schedule, eptid=user.eptid
-        ).exists()
-
-
 class Eptid(models.Model):
     class Meta:
         verbose_name = 'eptid'
@@ -243,8 +255,6 @@ class Eptid(models.Model):
 
     def __str__(self):
         return self.eptid
-
-    objects = EptidManager()
 
     id = models.UUIDField(
         primary_key=True,

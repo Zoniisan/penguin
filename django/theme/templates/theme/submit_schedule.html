@@ -3,14 +3,14 @@
 {% load bootstrap4 %}
 
 {% block headtitle %}
-提出期間設定
+提出日程設定
 {% endblock headtitle %}
 
 {% block breadcrumb %}
 <a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
 <a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
 <a href="{% url 'theme:staff_menu' %}" class="breadcrumb-item">統一テーマ案投票管理</a>
-<span class="breadcrumb-item active">提出期間設定</span>
+<span class="breadcrumb-item active">提出日程設定</span>
 {% endblock breadcrumb %}
 
 {% block extracss %}
@@ -24,7 +24,7 @@
         <form method="post">
             <div class="card">
                 <div class="card-header">
-                    <h3>提出期間設定</h3>
+                    <h3>提出日程設定</h3>
                 </div>
                 <div class="card-body">
                     {% csrf_token %}

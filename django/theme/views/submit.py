@@ -26,9 +26,10 @@ class SubmitView(RedirectIfNotIdentified, generic.CreateView):
         # 提出済みの場合は拒否
         if not Theme.objects.can_submit_check(request.user):
             messages.error(request, 'あなたは既に統一テーマ案を提出済みです。')
+            return redirect('home:index')
         # 投票期間外
         if not SubmitSchedule.objects.is_active():
-            messages.error(request, '統一テーマ案提出期間外です。')
+            messages.error(request, '統一テーマ案提出日程外です。')
             return redirect('home:index')
 
         return super().get(request, **kwargs)

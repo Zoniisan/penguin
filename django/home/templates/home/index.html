@@ -93,7 +93,7 @@ active
 </div>
 
 <!-- Theme / SubmitSchedule -->
-{% if submit_schedule %}
+{% if submit_schedule_is_active %}
 <div class="row">
     <div class="col">
         <div class="card">
@@ -105,7 +105,7 @@ active
                 <table class="table">
                     <tbody>
                         <tr>
-                            <th scope="row">提出期間</th>
+                            <th scope="row">提出日程</th>
                             <td>{{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}</td>
                             <td></td>
                         </tr>
@@ -129,6 +129,40 @@ active
     </div>
 </div>
 {% endif %}
+
+<!-- Vote -->
+{% for obj in vote_schedule_dict %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h3><i class="fas fa-star"></i>&nbsp;統一テーマ案投票：{{ obj.vote_schedule }}</h3>
+            </div>
+            <div class="card-body">
+                <p>統一テーマ案投票はこちらから！</p>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="row">投票日程</th>
+                            <td>{{ obj.vote_schedule.start_datetime }} - {{ obj.vote_schedule.finish_datetime }}</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                {% if obj.can_vote %}
+                <div class="text-right">
+                    <a class="btn btn-warning" href="{% url 'theme:vote' obj.vote_schedule.id %}" role="button">統一テーマ案投票</a>
+                </div>
+                {% else %}
+                あなたは既に統一テーマ案に投票しています。
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% else %}
 <div class="alert alert-primary" role="alert">

@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 from theme.forms import ThemeSlackForm, ThemeStaffForm
-from theme.models import SubmitSchedule, ThemeSlack, ThemeStaff
+from theme.models import (SubmitSchedule, Theme, ThemeSlack, ThemeStaff,
+                          VoteSchedule)
 
 
 class ThemeStaffOnlyMixin(UserPassesTestMixin):
@@ -26,11 +27,17 @@ class MenuView(ThemeStaffOnlyMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 提出期間
+        # 提出日程
         context["submit_schedule"] = SubmitSchedule.objects.filter().first()
-        # 提出期間有効
+        # 提出日程有効
         context["submit_schedule_is_active"] = \
             SubmitSchedule.objects.is_active()
+        # 提出件数
+        context['theme_count'] = Theme.objects.all().count()
+        # 投票日程一覧
+        context['vote_schedule_list'] = VoteSchedule.objects.all().order_by(
+            'start_datetime'
+        )
         # 統一テーマ案投票担当スタッフ一覧
         context["theme_staff_list"] = ThemeStaff.objects.all_list()
         # slack ch.

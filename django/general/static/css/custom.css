@@ -4,7 +4,7 @@
     height: 100%;
 }
 
-table.table-clickable tr[data-href] {
+table.table-clickable tr {
     /* table-clickable でリンクを張る時、ポインターを変更 */
     cursor: pointer;
 }

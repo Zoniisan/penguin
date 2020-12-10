@@ -63,4 +63,47 @@ urlpatterns = [
         views.submit.DeleteView.as_view(),
         name='submit_delete'
     ),
+
+    # views/vote.py
+    path(
+        'vote/<slug:pk>',
+        views.vote.VoteView.as_view(),
+        name='vote'
+    ),
+    path(
+        'vote/create/<slug:vote_schedule_id>/<slug:theme_id>',
+        views.vote.VoteCreateView.as_view(),
+        name='vote_create'
+    ),
+    path(
+        'vote/schedule/create',
+        views.vote.ScheduleCreateView.as_view(),
+        name='vote_schedule_create'
+    ),
+    path(
+        'vote/schedule/update/<slug:pk>',
+        views.vote.ScheduleUpdateView.as_view(),
+        name='vote_schedule_update'
+    ),
+    path(
+        'vote/schedule/delete/<slug:pk>',
+        views.vote.ScheduleDeleteView.as_view(),
+        name='vote_schedule_delete'
+    ),
+    path(
+        'vote/list/pending/<slug:vote_schedule_id>',
+        views.vote.ListPendingView.as_view(),
+        name='vote_list_pending'
+    ),
+    path(
+        'vote/list/pending/<slug:vote_schedule_id>'
+        '/<slug:result_vote_schedule_id>',
+        views.vote.ListPendingView.as_view(),
+        name='vote_list_pending'
+    ),
+    path(
+        'vote/result/<slug:vote_schedule_id>',
+        views.vote.ResultView.as_view(),
+        name='vote_result'
+    ),
 ]

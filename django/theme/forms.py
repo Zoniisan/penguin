@@ -55,3 +55,15 @@ class ThemeSlackForm(forms.ModelForm):
         fields = (
             'slack_ch',
         )
+
+
+class VoteScheduleForm(forms.ModelForm):
+    class Meta:
+        model = models.VoteSchedule
+        fields = (
+            'name', 'description', 'start_datetime', 'finish_datetime'
+        )
+
+
+class NoneForm(forms.Form):
+    pass
