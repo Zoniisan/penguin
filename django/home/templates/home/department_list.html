@@ -61,6 +61,30 @@ active
                 </div>
             </div>
         </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>システム管理者一覧</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>システム管理者</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in admin_list %}
+                        <tr>
+                            <td scope="row">{{ user }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-right">
+                <a class="btn btn-danger" href="{% url 'home:department_admin' %}" role="button">システム管理者管理</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock contents %}

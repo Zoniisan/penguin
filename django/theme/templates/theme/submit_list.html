@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+統一テーマ案一覧
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'theme:staff_menu' %}" class="breadcrumb-item">統一テーマ案投票管理</a>
+<span class="breadcrumb-item active">統一テーマ案一覧</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案一覧</h3>
+            </div>
+            <div class="card-body">
+                <p>提出された統一テーマ案一覧です。各行を選択すると次の操作を行えます。</p>
+                <ul>
+                    <li>統一テーマ案の編集と削除。編集を行った場合は編集すると記録が残ります。</li>
+                    <li>統一テーマ案投稿者への連絡</li>
+                </ul>
+                <div class="text-right">
+                    <a class="btn btn-success" href="{% url 'theme:submit_staff_submit' %}" role="button">強制提出</a>
+                    <p><small class="text-muted">統一テーマ提出日程に関わらず提出操作を行います。</small></p>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-clickable">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 60vw;">内容</th>
+                                <th>投稿者</th>
+                                <th>投稿日時</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in object_list %}
+                            <tr data-href="{% url 'theme:submit_update' obj.id %}">
+                                <td>
+                                    <h4>{{ obj.theme }}</h4>
+                                    <p>{{ obj.description|linebreaksbr }}</p>
+                                </td>
+                                <td class="text-nowrap">
+                                    {{ obj.writer }}
+                                    {% if obj.submit_staff %}<br><span class="text-danger">強制提出:
+                                        {{ obj.submit_staff }}</span>{% endif %}
+                                    {% if obj.update_staff %}<br><span class="text-success">最終編集:
+                                        {{ obj.update_staff }}</span>{% endif %}
+                                </td>
+                                <td>
+                                    <span{% if obj.submit_staff %} class="text-danger" {% endif %}>
+                                        {{ obj.create_datetime }}
+                                        </span>
+                                        {% if obj.update_staff %}
+                                        <span class="text-success">
+                                            {{ obj.update_datetime }}
+                                        </span>
+                                        {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

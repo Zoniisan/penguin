@@ -7,5 +7,6 @@ var sortable = Sortable.create(sortable_tbody, {
             field_id = '#id_new_order_' + items[i].id
             sortable_form.querySelector(field_id).value = i;
         }
-    }
+    },
+    delay: 50,
 });

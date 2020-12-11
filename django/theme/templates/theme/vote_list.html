@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+統一テーマ案投票
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<span class="breadcrumb-item active">統一テーマ案投票</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案投票&nbsp;<span class="text-danger">{{ vote_schedule }}</span></h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    <strong>{{ vote_schedule.name }}</strong>&nbsp;{{ vote_schedule.description }}
+                </div>
+                <ul>
+                    <li>投票は 1 人 1 回までです。</li>
+                    <li>投票者の個人情報は記録されません。</li>
+                    <li>案は毎回ランダムな並び順で表示されます。</li>
+                </ul>
+                {% if not can_vote %}
+                <div class="alert alert-danger" role="alert">
+                    あなたは投票済みです！投票ありがとうございました！
+                </div>
+                {% endif %}
+                <table class="table table-hover table-clickable">
+                    <thead>
+                        <tr>
+                            <th>統一テーマ案</th>
+                            <th style="width: 10%;">Tweet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for theme in theme_list %}
+                        <tr data-toggle="modal" data-target="#modelId-{{ theme.id }}">
+                            <td>{{ theme.theme }}</td>
+                            <td><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button"
+                                    data-size="large"
+                                    data-text="{{ theme.theme }}&#010;&#010;11月祭統一テーマ案投票（{{ vote_schedule }}）実施中！京大生なら誰でも投票できます！&#010;"
+                                    data-hashtags="NF統一テーマ案投票" data-lang="ja" data-show-count="false">Tweet</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% for theme in theme_list %}
+        <!-- Modal -->
+        <div class="modal fade" id="modelId-{{ theme.id }}" tabindex="-1" role="dialog"
+            aria-labelledby="modelTitleId-{{ theme.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">統一テーマ案詳細</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h5>{{ theme.theme }}</h5>
+                        <p>{{ theme.description|linebreaksbr }}</p>
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="mb-0">
+                                <li>投票は 1 人 1 回までです。</li>
+                                <li>一度投票すると取り消しできません。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        {% if can_vote %}
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                        <a class="btn btn-success" href="{% url 'theme:vote_create' vote_schedule.id theme.id %}"
+                            role="button">投票する</a>
+                        {% else %}
+                        <p>投票済みです。</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+{% endblock extrajs %}

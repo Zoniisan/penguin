@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+投票日程編集
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'theme:staff_menu' %}" class="breadcrumb-item">統一テーマ案投票管理</a>
+<span class="breadcrumb-item active">投票日程編集</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>投票日程編集</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0">
+                    {% buttons %}
+                    <div class="row">
+                        <div class="col">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#modelId">
+                                削除
+                            </button>
+                        </div>
+                        <div class="col text-right">
+                            <button type="submit" class="btn btn-success mb-0">編集</button>
+                        </div>
+                    </div>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+        <!-- Modal -->
+        <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">確認</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        本当に削除しますか？
+                        <div class="alert alert-danger" role="alert">
+                            削除するとこの投票日程において投票された全ての票が無効になります。
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                        <a class="btn btn-danger" href="{% url 'theme:vote_schedule_delete' object.id %}" role="button">削除</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+{% endblock %}

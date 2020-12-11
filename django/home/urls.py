@@ -124,6 +124,11 @@ urlpatterns = [
         views.department.DeleteView.as_view(),
         name='department_delete'
     ),
+    path(
+        'department/admin',
+        views.department.AdminView.as_view(),
+        name='department_admin'
+    ),
 
     # view/message.py
     path(

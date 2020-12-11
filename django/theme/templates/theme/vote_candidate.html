@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+投票候補選択
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'theme:staff_menu' %}" class="breadcrumb-item">統一テーマ案投票管理</a>
+<span class="breadcrumb-item active">投票候補選択</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>投票候補選択&nbsp;<span class="text-danger">{{ vote_schedule }}</span></h3>
+                </div>
+                <div class="card-body">
+                    <p>各行を選択すると、候補に入れるかどうかを切り替えられます。</p>
+                    <p>既に終了した投票がある場合、その獲得票数順に並び替えることができます。</p>
+                    <p>実際の投票画面では、ランダムな並び順で表示されます。</p>
+                    <div class="alert alert-danger" role="alert">
+                        <div class="row">
+                            <div class="col-xl-9">
+                                <p>候補を選択したら必ず「候補確定」を押してください！</p>
+                            </div>
+                            <div class="col-xl-3 text-right">
+                                <button type="submit" class="btn btn-success">候補確定</button>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link{% if not result_vote_schedule %} active{% endif %}"
+                                href="{% url 'theme:vote_candidate' vote_schedule.id %}">投稿日時順：全件表示</a>
+                        </li>
+                        {% for finished_vote_schedule in finished_vote_schedule_list %}
+                        <li class="nav-item">
+                            <a class="nav-link{% if result_vote_schedule == finished_vote_schedule %} active{% endif %}"
+                                href="{% url 'theme:vote_candidate' vote_schedule.id finished_vote_schedule.id %}">獲得票数順：{{ finished_vote_schedule }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-check">
+                            <thead>
+                                <tr>
+                                    <th>選択</th>
+                                    <th>状態</th>
+                                    <th>内容</th>
+                                    {% if result_vote_schedule %}<th>得票数</th>{% endif %}
+                                    <th>投稿者</th>
+                                    <th>投稿日時</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for obj in object_list %}
+                                <tr>
+                                    <td>{{ obj.field }}</td>
+                                    <td>{% if obj.theme_count.theme in active_theme_list %}候補{% else %}無効{% endif %}
+                                    </td>
+                                    <td{% if obj.theme_count.theme in active_theme_list %} class="table-success"
+                                        {% endif %}>
+                                        <h4>{{ obj.theme_count.theme.theme }}</h4>
+                                        <p>{{ obj.theme_count.theme.description|linebreaksbr }}</p>
+                                        </td>
+                                        {% if result_vote_schedule %}<td>{{ obj.theme_count.count }}</td>{% endif %}
+                                        <td>
+                                            {{ obj.theme_count.theme.writer }}
+                                            {% if obj.theme_count.theme.submit_staff %}<br><span
+                                                class="text-danger">強制提出:
+                                                {{ obj.theme_count.theme.submit_staff }}</span>{% endif %}
+                                            {% if obj.theme_count.theme.update_staff %}<br><span
+                                                class="text-success">最終編集:
+                                                {{ obj.theme_count.theme.update_staff }}</span>{% endif %}
+                                        </td>
+                                        <td>
+                                            <span{% if obj.theme_count.theme.submit_staff %} class="text-danger"
+                                                {% endif %}>
+                                                {{ obj.theme_count.theme.create_datetime }}
+                                                </span>
+                                                {% if obj.theme_count.theme.update_staff %}
+                                                <span class="text-success">
+                                                    {{ obj.theme_count.theme.update_datetime }}
+                                                </span>
+                                                {% endif %}
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}

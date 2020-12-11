@@ -38,11 +38,13 @@ class CreateView(mixins.AdminOnlyMixin, generic.CreateView):
         form = super().get_form()
 
         form.fields['start_datetime'].widget = DateTimePickerInput(options={
-            'format': 'YYYY-MM-DD HH:mm'
+            'format': 'YYYY-MM-DD HH:mm',
+            'locale': 'ja'
         }).start_of('display')
 
         form.fields['finish_datetime'].widget = DateTimePickerInput(options={
-            'format': 'YYYY-MM-DD HH:mm'
+            'format': 'YYYY-MM-DD HH:mm',
+            'locale': 'ja'
         }).end_of('display')
 
         return form
@@ -65,10 +67,12 @@ class UpdateView(mixins.AdminOnlyMixin, generic.UpdateView):
         form = super().get_form()
 
         form.fields['start_datetime'].widget = DateTimePickerInput(options={
-            'format': 'YYYY-MM-DD HH:mm'
+            'format': 'YYYY-MM-DD HH:mm',
+            'locale': 'ja'
         }).start_of('display')
         form.fields['finish_datetime'].widget = DateTimePickerInput(options={
-            'format': 'YYYY-MM-DD HH:mm'
+            'format': 'YYYY-MM-DD HH:mm',
+            'locale': 'ja'
         }).end_of('display')
 
         return form
@@ -82,7 +86,6 @@ class UpdateView(mixins.AdminOnlyMixin, generic.UpdateView):
 
 
 class DeleteView(mixins.AdminOnlyMixin, generic.RedirectView):
-    permanent = True
     pattern_name = 'home:notice_list'
 
     def get_redirect_url(self, *args, **kwargs):

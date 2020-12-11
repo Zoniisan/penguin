@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+{% block headtitle %}
+統一テーマ案編集
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'theme:staff_menu' %}" class="breadcrumb-item">統一テーマ案投票管理</a>
+<a href="{% url 'theme:submit_list' %}" class="breadcrumb-item">統一テーマ案一覧</a>
+<span class="breadcrumb-item active">編集</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>連絡先情報</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-nowrap">投稿者</th>
+                            <td>{{ object.writer }}</td>
+                            <td><a class="btn btn-primary"
+                                    href="{% url 'home:message_create' 'normal' %}?to={{ object.writer.id }}"
+                                    role="button"><i class="fas fa-bell"></i>&nbsp;メッセージを送信</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">メールアドレス</th>
+                            <td>{{ object.writer.email }}</td>
+                            <td><a class="btn btn-info" href="mailto:{{ object.writer.email }}" role="button"><i
+                                        class="fas fa-envelope"></i>&nbsp;メール</a></td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-nowrap">電話番号</th>
+                            <td>{{ object.writer.tel }}</td>
+                            <td><a class="btn btn-info" href="tel:{{ object.writer.tel }}" role="button"><i
+                                        class="fas fa-phone"></i>&nbsp;電話</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>統一テーマ案編集</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success mb-0" data-toggle="modal" data-target="#modelId">
+                        編集
+                    </button>
+                    {% endbuttons %}
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">確認</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            本当に編集しますか？
+                            <div class="alert alert-danger" role="alert">
+                                編集すると、編集日時と編集したスタッフが記録されます。
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                            <button type="submit" class="btn btn-success">編集</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案削除</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-danger">削除操作は通常必要ありません。</p>
+                <ul>
+                    <li>「投票候補選択」でこの統一テーマ案を選択しなければ、投票候補になりません。</li>
+                    <li>削除操作を行うと、提出日程内であればこの投稿者はもう一度統一テーマ案を提出できるようになります。</li>
+                </ul>
+            </div>
+            <div class="card-footer text-right">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModalId">
+                    削除
+                </button>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="deleteModalId" tabindex="-1" role="dialog" aria-labelledby="deleteModalTitleId"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">確認</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        本当に削除しますか？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                        <a class="btn btn-danger" href="{% url 'theme:submit_delete' object.id %}" role="button">削除</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+{% endblock extrajs %}

@@ -1,0 +1,21 @@
+{% extends django_slack %}
+
+{% load django_slack %}
+
+{% block channel %}
+{{ slack_ch }}
+{% endblock channel %}
+
+{% block text %}
+統一テーマ案が提出されました。
+
+統一テーマ
+{{ object.theme }}
+
+趣意文
+{{ object.description }}
+
+投稿者
+{{ object.writer }}
+
+{% endblock text %}
