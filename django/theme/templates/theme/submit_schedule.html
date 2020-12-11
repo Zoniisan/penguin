@@ -35,7 +35,7 @@
                     {% buttons %}
                     <div class="row">
                         <div class="col">
-                            {% if asis %}
+                            {% if asis_submit_schedule %}
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modelId">
                                 削除
@@ -49,7 +49,7 @@
                     {% endbuttons %}
                 </div>
             </div>
-            {% if asis %}
+            {% if asis_submit_schedule %}
             <!-- Modal -->
             <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
                 aria-hidden="true">

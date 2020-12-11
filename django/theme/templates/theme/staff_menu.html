@@ -37,13 +37,13 @@ active
                             <tr>
                                 <td scope="row">
                                     {% if submit_schedule_is_active %}
-                                    <span class="badge badge-pill badge-success">有効</span>
+                                    <span class="badge badge-pill badge-success">期間内</span>
                                     {% else %}
-                                    <span class="badge badge-pill badge-secondary">無効</span>
+                                    <span class="badge badge-pill badge-secondary">期間外</span>
                                     {% endif %}
                                 </td>
-                                <td>提出</td>
-                                <td>
+                                <td{% if submit_schedule_is_active %} class="table-success"{% endif %}>提出</td>
+                                <td{% if submit_schedule_is_active %} class="table-success"{% endif %}>
                                     {% if submit_schedule %}
                                     {{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}
                                     {% else %}
@@ -58,33 +58,33 @@ active
                                         role="button">提出案一覧</a>
                                 </td>
                             </tr>
-                            {% for vote in vote_schedule_list %}
+                            {% for vote_schedule in vote_schedule_list %}
                             <tr>
                                 <td scope="row">
-                                    {% if vote.get_status == 'pending' %}
+                                    {% if vote_schedule.get_status == 'pending' %}
                                     <span class="badge badge-pill badge-primary">投票前</span>
-                                    {% elif vote.get_status == 'active' %}
+                                    {% elif vote_schedule.get_status == 'active' %}
                                     <span class="badge badge-pill badge-warning">投票中</span>
                                     {% else %}
                                     <span class="badge badge-pill badge-danger">終了</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ vote.name }}</td>
-                                <td>
-                                    {{ vote.start_datetime }} - {{ vote.finish_datetime }}
+                                <td{% if vote_schedule.is_active %} class="table-warning"{% endif %}>{{ vote_schedule.name }}</td>
+                                <td{% if vote_schedule.is_active %} class="table-warning"{% endif %}>
+                                    {{ vote_schedule.start_datetime }} - {{ vote_schedule.finish_datetime }}
                                 </td>
-                                <td>{{ vote.theme_list.count }}</td>
+                                <td>{{ vote_schedule.theme_list.count }}</td>
                                 <td>
-                                    <a class="btn btn-success" href="{% url 'theme:vote_schedule_update' vote.id %}"
+                                    <a class="btn btn-success" href="{% url 'theme:vote_schedule_update' vote_schedule.id %}"
                                         role="button">日程編集</a>
-                                    {% if vote.get_status == 'pending' %}
-                                    <a class="btn btn-primary" href="{% url 'theme:vote_list_pending' vote.id %}"
+                                    {% if vote_schedule.get_status == 'pending' %}
+                                    <a class="btn btn-primary" href="{% url 'theme:vote_list_pending' vote_schedule.id %}"
                                         role="button">投票候補選択</a>
-                                    {% elif vote.get_status == 'active' %}
-                                    <a class="btn btn-warning" href="{% url 'theme:vote_result' vote.id %}"
+                                    {% elif vote_schedule.get_status == 'active' %}
+                                    <a class="btn btn-warning" href="{% url 'theme:vote_result' vote_schedule.id %}"
                                         role="button">速報</a>
                                     {% else %}
-                                    <a class="btn btn-danger" href="{% url 'theme:vote_result' vote.id %}"
+                                    <a class="btn btn-danger" href="{% url 'theme:vote_result' vote_schedule.id %}"
                                         role="button">結果</a>
                                     {% endif %}
                                 </td>

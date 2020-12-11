@@ -172,6 +172,14 @@ class VoteSchedule(models.Model):
         else:
             return 'finished'
 
+    def is_active(self):
+        """投票期間の状態が active かどうかを判定
+
+        Returns:
+            bool: active なら True
+        """
+        return self.get_status() == 'active'
+
     def can_vote_check(self, user):
         """投票できるかどうかを判定
 

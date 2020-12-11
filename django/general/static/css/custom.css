@@ -13,5 +13,5 @@ span.select2-selection {
     /* select2 利用時、初期状態の幅を調整 */
     min-width: 40vw;
     /* 高さも調整 */
-    min-height: 5vh;
+    min-height: 4vh;
 }

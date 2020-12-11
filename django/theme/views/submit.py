@@ -12,27 +12,12 @@ from theme.models import SubmitSchedule, Theme, ThemeSlack
 from theme.views import ThemeStaffOnlyMixin
 
 
-class SubmitView(RedirectIfNotIdentified, generic.CreateView):
-    """通常提出
+class BaseSubmitView(generic.CreateView):
+    """通常提出・強制提出共通のベースクラス
 
-    1 ユーザーに限り 1 件まで統一テーマ案を提出できる
+    直接アクセスはできない
     """
-    template_name = 'theme/submit_submit.html'
     model = Theme
-    form_class = ThemeForm
-    success_url = reverse_lazy('home:index')
-
-    def get(self, request, **kwargs):
-        # 提出済みの場合は拒否
-        if not Theme.objects.can_submit_check(request.user):
-            messages.error(request, 'あなたは既に統一テーマ案を提出済みです。')
-            return redirect('home:index')
-        # 投票期間外
-        if not SubmitSchedule.objects.is_active():
-            messages.error(request, '統一テーマ案提出日程外です。')
-            return redirect('home:index')
-
-        return super().get(request, **kwargs)
 
     def get_form(self):
         form = super().get_form()
@@ -50,13 +35,38 @@ class SubmitView(RedirectIfNotIdentified, generic.CreateView):
         return form
 
     def form_valid(self, form):
+        messages.success(self.request, '統一テーマ案を提出しました！')
+        return super().form_valid(form)
+
+
+class NormalSubmitView(RedirectIfNotIdentified, BaseSubmitView):
+    """通常提出
+
+    1 ユーザーに限り 1 件まで統一テーマ案を提出できる
+    """
+    template_name = 'theme/submit_normal_submit.html'
+    form_class = ThemeForm
+    success_url = reverse_lazy('home:index')
+
+    def get(self, request, **kwargs):
+        # 提出済みの場合は拒否
+        if not Theme.objects.can_submit_check(request.user):
+            messages.error(request, 'あなたは既に統一テーマ案を提出済みです。')
+            return redirect('home:index')
+        # 提出期間外
+        if not SubmitSchedule.objects.is_active():
+            messages.error(request, '統一テーマ案提出日程外です。')
+            return redirect('home:index')
+
+        return super().get(request, **kwargs)
+
+    def form_valid(self, form):
         # 投稿者登録
         form.instance.writer = self.request.user
 
         # slack を送信
         self.send_slack(form.instance)
 
-        messages.success(self.request, '統一テーマ案を提出しました！')
         return super().form_valid(form)
 
     def send_slack(self, theme):
@@ -97,7 +107,7 @@ class SubmitView(RedirectIfNotIdentified, generic.CreateView):
             }, attachments)
 
 
-class StaffSubmitView(ThemeStaffOnlyMixin, generic.CreateView):
+class StaffSubmitView(ThemeStaffOnlyMixin, BaseSubmitView):
     """強制提出
 
     統一テーマ案投票担当スタッフであれば強制的に提出できる
@@ -105,53 +115,46 @@ class StaffSubmitView(ThemeStaffOnlyMixin, generic.CreateView):
     この場合、強制提出操作を行ったスタッフが記録される
     """
     template_name = 'theme/submit_staff_submit.html'
-    model = Theme
     form_class = StaffSubmitForm
     success_url = reverse_lazy('theme:submit_list')
-
-    def get_form(self):
-        form = super().get_form()
-
-        # 文字数カウント
-        form.fields['theme'].widget = CountableWidget(attrs={
-            'data-count': 'characters',
-            'data-max-count': 100,
-        })
-        form.fields['description'].widget = CountableWidget(attrs={
-            'data-count': 'characters',
-            'data-max-count': 400,
-        })
-
-        return form
 
     def form_valid(self, form):
         # 強制提出を行ったスタッフが記録される
         form.instance.submit_staff = self.request.user
 
-        messages.success(self.request, '統一テーマ案を提出しました！')
         return super().form_valid(form)
 
 
 class ScheduleView(ThemeStaffOnlyMixin, generic.CreateView):
+    """提出期間作成
+    """
     template_name = 'theme/submit_schedule.html'
     model = SubmitSchedule
     form_class = SubmitScheduleForm
     success_url = reverse_lazy('theme:staff_menu')
 
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        # 現時点での SubmitSchedule のインスタンスがあれば取得（なければ None）
+        self.asis_submit_schedule = SubmitSchedule.objects.filter().first()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["asis"] = self.asis
+        context["asis_submit_schedule"] = self.asis_submit_schedule
         return context
 
     def get_form(self):
         form = super().get_form()
 
-        if self.asis:
-            form.fields['start_datetime'].initial = self.asis.start_datetime
-            form.fields['finish_datetime'].initial = self.asis.finish_datetime
+        # 現時点で SubmitSchedule のインスタンスがあれば、
+        # 初期値を設定
+        if self.asis_submit_schedule:
+            form.fields['start_datetime'].initial = \
+                self.asis_submit_schedule.start_datetime
+            form.fields['finish_datetime'].initial = \
+                self.asis_submit_schedule.finish_datetime
 
         # datetimepicker を用意
-        # datetimepicker は views.py 側で widget 設定を行わないとだめっぽい
         form.fields['start_datetime'].widget = DateTimePickerInput(options={
             'format': 'YYYY-MM-DD HH:mm',
             'locale': 'ja'
@@ -165,16 +168,13 @@ class ScheduleView(ThemeStaffOnlyMixin, generic.CreateView):
         return form
 
     def form_valid(self, form):
-        messages.success(self.request, '投票期間を登録しました！')
+        messages.success(self.request, '提出期間を登録しました！')
         return super().form_valid(form)
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        # 現時点での SubmitSchedule があれば取得（なければ None）
-        self.asis = SubmitSchedule.objects.filter().first()
 
 
 class ScheduleDeleteView(ThemeStaffOnlyMixin, generic.RedirectView):
+    """ 提出期間削除
+    """
     pattern_name = 'theme:staff_menu'
 
     def get_redirect_url(self, *args, **kwargs):
@@ -182,19 +182,27 @@ class ScheduleDeleteView(ThemeStaffOnlyMixin, generic.RedirectView):
         obj = get_object_or_404(SubmitSchedule)
         obj.delete()
 
-        messages.error(self.request, '投票期間を削除しました！')
+        messages.error(self.request, '提出期間を削除しました！')
 
         # args / kwargs は捨てる
         return super().get_redirect_url()
 
 
 class ListView(ThemeStaffOnlyMixin, generic.ListView):
+    """提出統一テーマ案一覧表示
+    """
     template_name = 'theme/submit_list.html'
     model = Theme
     ordering = ['create_datetime']
 
 
 class UpdateView(ThemeStaffOnlyMixin, generic.UpdateView):
+    """提出統一テーマ案更新
+
+    通常この操作は行わないが、提出された統一テーマ案を
+    スタッフが編集することができる。
+    編集を行うと、編集を行った日時とスタッフが登録サれる。
+    """
     template_name = 'theme/submit_update.html'
     model = Theme
     form_class = ThemeForm
@@ -224,6 +232,13 @@ class UpdateView(ThemeStaffOnlyMixin, generic.UpdateView):
 
 
 class DeleteView(ThemeStaffOnlyMixin, generic.RedirectView):
+    """提出統一テーマ案削除
+
+    通常この操作は行わないが、提出された統一テーマ案を
+    スタッフが削除することができる。
+    削除を行うと、その統一テーマ案を提出したユーザーは
+    再び統一テーマ案を提出できるようになる（提出期間内の場合）。
+    """
     pattern_name = 'theme:submit_list'
 
     def get_redirect_url(self, *args, **kwargs):

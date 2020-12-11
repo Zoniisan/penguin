@@ -29,12 +29,12 @@ urlpatterns = [
 
     # views/submit.py
     path(
-        'submit',
-        views.submit.SubmitView.as_view(),
-        name='submit_submit'
+        'submit/normal_submit',
+        views.submit.NormalSubmitView.as_view(),
+        name='submit_normal_submit'
     ),
     path(
-        'submit/staff',
+        'submit/staff_submit',
         views.submit.StaffSubmitView.as_view(),
         name='submit_staff_submit'
     ),
