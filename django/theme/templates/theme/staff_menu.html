@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+統一テーマ案投票管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">統一テーマ案投票管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案投票管理</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>状態</th>
+                                <th>項目</th>
+                                <th>期間</th>
+                                <th>候補数</th>
+                                <th>総得票数</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">
+                                    {% if submit_schedule_is_active %}
+                                    <span class="badge badge-pill badge-success">期間内</span>
+                                    {% else %}
+                                    <span class="badge badge-pill badge-secondary">期間外</span>
+                                    {% endif %}
+                                </td>
+                                <td{% if submit_schedule_is_active %} class="table-success" {% endif %}>提出</td>
+                                    <td{% if submit_schedule_is_active %} class="table-success" {% endif %}>
+                                        {% if submit_schedule %}
+                                        {{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}
+                                        {% else %}
+                                        未設定
+                                        {% endif %}
+                                        </td>
+                                        <td>{{ theme_count }}</td>
+                                        <td>-</td>
+                                        <td>
+                                            <a class="btn btn-success" href="{% url 'theme:submit_schedule' %}"
+                                                role="button">日程設定</a>
+                                            <a class="btn btn-primary" href="{% url 'theme:submit_list' %}"
+                                                role="button">提出案一覧</a>
+                                        </td>
+                            </tr>
+                            {% for vote_schedule in vote_schedule_list %}
+                            <tr>
+                                <td scope="row">
+                                    {% if vote_schedule.get_status == 'pending' %}
+                                    <span class="badge badge-pill badge-primary">投票前</span>
+                                    {% elif vote_schedule.get_status == 'active' %}
+                                    <span class="badge badge-pill badge-warning">投票中</span>
+                                    {% else %}
+                                    <span class="badge badge-pill badge-danger">終了</span>
+                                    {% endif %}
+                                </td>
+                                <td{% if vote_schedule.is_active %} class="table-warning" {% endif %}>
+                                    {{ vote_schedule.name }}</td>
+                                    <td{% if vote_schedule.is_active %} class="table-warning" {% endif %}>
+                                        {{ vote_schedule.start_datetime }} - {{ vote_schedule.finish_datetime }}
+                                        </td>
+                                        <td>{{ vote_schedule.theme_list.count }}</td>
+                                        <td>{{ vote_schedule.get_total_count }}</td>
+                                        <td>
+                                            <a class="btn btn-success"
+                                                href="{% url 'theme:vote_schedule_update' vote_schedule.id %}"
+                                                role="button">日程編集</a>
+                                            {% if vote_schedule.get_status == 'pending' %}
+                                            <a class="btn btn-primary"
+                                                href="{% url 'theme:vote_candidate' vote_schedule.id %}"
+                                                role="button">投票候補選択</a>
+                                            {% elif vote_schedule.get_status == 'active' %}
+                                            <a class="btn btn-warning"
+                                                href="{% url 'theme:vote_result' vote_schedule.id %}"
+                                                role="button">速報</a>
+                                            {% else %}
+                                            <a class="btn btn-danger"
+                                                href="{% url 'theme:vote_result' vote_schedule.id %}"
+                                                role="button">結果</a>
+                                            {% endif %}
+                                        </td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td scope="row"></td>
+                                {% if submit_schedule %}
+                                <td colspan="4">投票日程を追加する場合は、右のボタンを押してください</td>
+                                <td><a href="{% url 'theme:vote_schedule_create' %}" class="btn btn-success"
+                                        role="button">日程追加</a></td>
+                                {% else %}
+                                <td colspan="4" class="text-danger">投票日程を追加する場合は、まず提出日程を設定してください</td>
+                                <td><a href="#" class="btn btn-success disabled" role="button">日程追加</a></td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header">
+                <h3>統一テーマ案投票担当スタッフ一覧</h3>
+            </div>
+            <div class="card-body">
+                <p>このページを閲覧できるのは、統一テーマ案投票管理スタッフ（とシステム管理者）のみです。</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>統一テーマ案投票担当スタッフ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in theme_staff_list %}
+                        <tr>
+                            <td scope="row">{{ user }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-right">
+                <a class="btn btn-danger" href="{% url 'theme:staff_theme_staff' %}" role="button">統一テーマ案投票担当スタッフ管理</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-header">
+                <h3>slack ch.</h3>
+            </div>
+            <div class="card-body">
+                <p>統一テーマ案が提出されたときに通知する slack ch. を指定します。</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>slack ch.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% if verbose_slack_ch %}
+                            <td scope="row">
+                                {{ verbose_slack_ch }}
+                            </td>
+                            {% else %}
+                            <td scope="row" class="table-warning">
+                                未設定
+                            </td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer text-muted text-right">
+                <a class="btn btn-primary" href="{% url 'theme:staff_theme_slack' %}" role="button">slack ch. 設定</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

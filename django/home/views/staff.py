@@ -3,12 +3,23 @@ from django.template import loader
 from django.views import generic
 from home.models import Department, User
 from penguin import mixins
+from theme.models import ThemeStaff
 
 
 class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
     """スタッフ向け機能一覧
     """
     template_name = 'home/staff_menu.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 投票テーマ案投票スタッフかどうかを判定
+        context['is_theme_staff'] = ThemeStaff.objects.check_perm(
+            self.request.user
+        )
+
+        return context
 
 
 class MemberView(mixins.StaffOnlyMixin, generic.TemplateView):

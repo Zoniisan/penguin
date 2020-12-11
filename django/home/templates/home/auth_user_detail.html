@@ -24,7 +24,8 @@ active
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <a class="btn btn-info" href="#"><i class="fas fa-bell"></i>&nbsp;メッセージ送信</a>
+                    <a class="btn btn-primary mb-2" href="{% url 'home:message_create' 'normal' %}?to={{ object.id }}"><i class="fas fa-bell"></i>&nbsp;メッセージ送信</a><br>
+                    <a class="btn btn-info" href="email:{{ object.email }}"><i class="fas fa-envelope"></i>&nbsp;メール</a>
                     <a class="btn btn-info" href="tel:{{ object.tel }}"><i class="fas fa-phone"></i>&nbsp;電話</a>
                 </div>
                 <table class="table table-striped">

@@ -37,7 +37,6 @@ class UpdateView(mixins.AdminOnlyMixin, generic.UpdateView):
 
 
 class DeleteView(mixins.AdminOnlyMixin, generic.RedirectView):
-    permanent = True
     pattern_name = 'home:contactkind_list'
 
     def get_redirect_url(self, *args, **kwargs):

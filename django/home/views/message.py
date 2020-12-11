@@ -93,6 +93,10 @@ class StaffCreateView(mixins.StaffOnlyMixin, generic.CreateView):
         form.fields['department'].queryset = \
             self.request.user.department_list()
 
+        # get クエリで宛先ユーザー id が投げられた場合は対応
+        if self.request.GET.get('to'):
+            form.fields['to'].initial = self.request.GET.get('to')
+
         # all モードの場合は個人情報を入力した全 user を宛先とする。
         if self.mode == 'all':
             form.fields['to'].initial = [

@@ -1,7 +1,7 @@
 PENGUIN 個人情報入力はまだ終了していません。
 下記リンクから手続きを進めてください。
 
-{{ BASE_URL }}{% url 'home:auth_identify' token.id %}
+{{ BASE_URL }}{% url 'home:auth_identify' token.id %}{% if next_url %}?next={{ next_url }}{% endif %}
 
 -------------------------------------
 このメールは自動送信です。返信はできません。
