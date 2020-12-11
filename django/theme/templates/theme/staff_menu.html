@@ -34,7 +34,7 @@ active
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="table-info">
+                            <tr>
                                 <td scope="row">
                                     {% if submit_schedule_is_active %}
                                     <span class="badge badge-pill badge-success">有効</span>
@@ -81,9 +81,11 @@ active
                                     <a class="btn btn-primary" href="{% url 'theme:vote_list_pending' vote.id %}"
                                         role="button">投票候補選択</a>
                                     {% elif vote.get_status == 'active' %}
-                                    <a class="btn btn-warning" href="{% url 'theme:vote_result' vote.id %}" role="button">速報</a>
+                                    <a class="btn btn-warning" href="{% url 'theme:vote_result' vote.id %}"
+                                        role="button">速報</a>
                                     {% else %}
-                                    <a class="btn btn-danger" href="{% url 'theme:vote_result' vote.id %}" role="button">結果</a>
+                                    <a class="btn btn-danger" href="{% url 'theme:vote_result' vote.id %}"
+                                        role="button">結果</a>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -149,13 +151,15 @@ active
                     </thead>
                     <tbody>
                         <tr>
+                            {% if verbose_slack_ch %}
                             <td scope="row">
-                                {% if verbose_slack_ch %}
                                 {{ verbose_slack_ch }}
-                                {% else %}
-                                未設定
-                                {% endif %}
                             </td>
+                            {% else %}
+                            <td scope="row" class="table-warning">
+                                未設定
+                            </td>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>

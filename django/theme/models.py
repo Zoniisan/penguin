@@ -287,7 +287,7 @@ class ThemeStaffManager(models.Manager):
             ThemeStaff.objects.filter(user=user).exists() or user.is_admin
         )
 
-    def all_list(self):
+    def get_user_list(self):
         """統一テーマ管理スタッフを全て求める
 
         Returns:
