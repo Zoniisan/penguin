@@ -9,7 +9,7 @@ class ThemeManager(models.Manager):
     def can_submit_check(self, user):
         """統一テーマ案を提出できるかどうかをチェック
 
-        提出済みでなければ True とする
+        正規学生かつ提出済みでなければ True とする
         Args:
             user(User): チェックしたいユーザー
         Returns:
@@ -17,6 +17,7 @@ class ThemeManager(models.Manager):
         """
         return (
             user.is_authenticated and user.is_identified
+            and user.is_student
         ) and (
             not Theme.objects.filter(writer=user).exists()
         )
@@ -183,16 +184,25 @@ class VoteSchedule(models.Model):
     def can_vote_check(self, user):
         """投票できるかどうかを判定
 
-        投票済みでなければ True
+        正規学生 and 投票済みでなければ True
 
         Args:
             user(User): ユーザー
         Returns:
             bool: 投票可能なら True
         """
-        return user.is_authenticated and not Eptid.objects.filter(
-            schedule=self, eptid=user.eptid
-        ).exists()
+        return user.is_authenticated and user.is_student and \
+            not Eptid.objects.filter(
+                schedule=self, eptid=user.eptid
+            ).exists()
+
+    def get_total_count(self):
+        """総得票数をカウントする
+
+        Returns:
+            int: 総得票数
+        """
+        return Vote.objects.filter(schedule=self).count()
 
     id = models.UUIDField(
         primary_key=True,

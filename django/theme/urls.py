@@ -66,13 +66,13 @@ urlpatterns = [
 
     # views/vote.py
     path(
-        'vote/<slug:pk>',
-        views.vote.VoteView.as_view(),
-        name='vote'
+        'vote/list/<slug:vote_schedule_id>',
+        views.vote.ListView.as_view(),
+        name='vote_list'
     ),
     path(
         'vote/create/<slug:vote_schedule_id>/<slug:theme_id>',
-        views.vote.VoteCreateView.as_view(),
+        views.vote.CreateView.as_view(),
         name='vote_create'
     ),
     path(
@@ -91,15 +91,15 @@ urlpatterns = [
         name='vote_schedule_delete'
     ),
     path(
-        'vote/list/pending/<slug:vote_schedule_id>',
-        views.vote.ListPendingView.as_view(),
-        name='vote_list_pending'
+        'vote/candidate/<slug:vote_schedule_id>',
+        views.vote.CandidateView.as_view(),
+        name='vote_candidate'
     ),
     path(
-        'vote/list/pending/<slug:vote_schedule_id>'
+        'vote/candidate/<slug:vote_schedule_id>'
         '/<slug:result_vote_schedule_id>',
-        views.vote.ListPendingView.as_view(),
-        name='vote_list_pending'
+        views.vote.CandidateView.as_view(),
+        name='vote_candidate'
     ),
     path(
         'vote/result/<slug:vote_schedule_id>',

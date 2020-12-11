@@ -40,11 +40,13 @@ active
                     </div>
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link{% if not result_schedule %} active{% endif %}" href="{% url 'theme:vote_list_pending' vote_schedule.id %}">全件表示（投稿日時順）</a>
+                            <a class="nav-link{% if not result_vote_schedule %} active{% endif %}"
+                                href="{% url 'theme:vote_candidate' vote_schedule.id %}">投稿日時順：全件表示</a>
                         </li>
                         {% for finished_vote_schedule in finished_vote_schedule_list %}
                         <li class="nav-item">
-                            <a class="nav-link{% if result_schedule == finished_vote_schedule %} active{% endif %}" href="{% url 'theme:vote_list_pending' vote_schedule.id finished_vote_schedule.id %}">獲得票数順：{{ finished_vote_schedule }}</a>
+                            <a class="nav-link{% if result_vote_schedule == finished_vote_schedule %} active{% endif %}"
+                                href="{% url 'theme:vote_candidate' vote_schedule.id finished_vote_schedule.id %}">獲得票数順：{{ finished_vote_schedule }}</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -55,6 +57,7 @@ active
                                     <th>選択</th>
                                     <th>状態</th>
                                     <th>内容</th>
+                                    {% if result_vote_schedule %}<th>得票数</th>{% endif %}
                                     <th>投稿者</th>
                                     <th>投稿日時</th>
                                 </tr>
@@ -63,25 +66,31 @@ active
                                 {% for obj in object_list %}
                                 <tr>
                                     <td>{{ obj.field }}</td>
-                                    <td>{% if obj.theme in active_list %}候補{% else %}無効{% endif %}</td>
-                                    <td{% if obj.theme in active_list %} class="table-success" {% endif %}>
-                                        <h4>{{ obj.theme.theme }}</h4>
-                                        <p>{{ obj.theme.description|linebreaksbr }}</p>
+                                    <td>{% if obj.theme_count.theme in active_theme_list %}候補{% else %}無効{% endif %}
+                                    </td>
+                                    <td{% if obj.theme_count.theme in active_theme_list %} class="table-success"
+                                        {% endif %}>
+                                        <h4>{{ obj.theme_count.theme.theme }}</h4>
+                                        <p>{{ obj.theme_count.theme.description|linebreaksbr }}</p>
+                                        </td>
+                                        {% if result_vote_schedule %}<td>{{ obj.theme_count.count }}</td>{% endif %}
+                                        <td>
+                                            {{ obj.theme_count.theme.writer }}
+                                            {% if obj.theme_count.theme.submit_staff %}<br><span
+                                                class="text-danger">強制提出:
+                                                {{ obj.theme_count.theme.submit_staff }}</span>{% endif %}
+                                            {% if obj.theme_count.theme.update_staff %}<br><span
+                                                class="text-success">最終編集:
+                                                {{ obj.theme_count.theme.update_staff }}</span>{% endif %}
                                         </td>
                                         <td>
-                                            {{ obj.theme.writer }}
-                                            {% if obj.theme.submit_staff %}<br><span class="text-danger">強制提出:
-                                                {{ obj.theme.submit_staff }}</span>{% endif %}
-                                            {% if obj.theme.update_staff %}<br><span class="text-success">最終編集:
-                                                {{ obj.theme.update_staff }}</span>{% endif %}
-                                        </td>
-                                        <td>
-                                            <span{% if obj.theme.submit_staff %} class="text-danger" {% endif %}>
-                                                {{ obj.theme.create_datetime }}
+                                            <span{% if obj.theme_count.theme.submit_staff %} class="text-danger"
+                                                {% endif %}>
+                                                {{ obj.theme_count.theme.create_datetime }}
                                                 </span>
-                                                {% if obj.theme.update_staff %}
+                                                {% if obj.theme_count.theme.update_staff %}
                                                 <span class="text-success">
-                                                    {{ obj.theme.update_datetime }}
+                                                    {{ obj.theme_count.theme.update_datetime }}
                                                 </span>
                                                 {% endif %}
                                         </td>

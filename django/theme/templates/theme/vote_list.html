@@ -32,9 +32,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for obj in object_list %}
-                        <tr data-toggle="modal" data-target="#modelId-{{ obj.id }}">
-                            <td>{{ obj.theme }}</td>
+                        {% for theme in theme_list %}
+                        <tr data-toggle="modal" data-target="#modelId-{{ theme.id }}">
+                            <td>{{ theme.theme }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -42,10 +42,10 @@
             </div>
         </div>
 
-        {% for obj in object_list %}
+        {% for theme in theme_list %}
         <!-- Modal -->
-        <div class="modal fade" id="modelId-{{ obj.id }}" tabindex="-1" role="dialog"
-            aria-labelledby="modelTitleId-{{ obj.id }}" aria-hidden="true">
+        <div class="modal fade" id="modelId-{{ theme.id }}" tabindex="-1" role="dialog"
+            aria-labelledby="modelTitleId-{{ theme.id }}" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -55,8 +55,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <h5>{{ obj.theme }}</h5>
-                        <p>{{ obj.description|linebreaksbr }}</p>
+                        <h5>{{ theme.theme }}</h5>
+                        <p>{{ theme.description|linebreaksbr }}</p>
                         <div class="alert alert-danger" role="alert">
                             <ul class="mb-0">
                                 <li>投票は 1 人 1 回までです。</li>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
-                        <a class="btn btn-success" href="{% url 'theme:vote_create' vote_schedule.id obj.id %}" role="button">投票する</a>
+                        <a class="btn btn-success" href="{% url 'theme:vote_create' vote_schedule.id theme.id %}" role="button">投票する</a>
                     </div>
                 </div>
             </div>

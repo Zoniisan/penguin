@@ -30,6 +30,7 @@ active
                                 <th>項目</th>
                                 <th>期間</th>
                                 <th>候補数</th>
+                                <th>総得票数</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
@@ -42,21 +43,22 @@ active
                                     <span class="badge badge-pill badge-secondary">期間外</span>
                                     {% endif %}
                                 </td>
-                                <td{% if submit_schedule_is_active %} class="table-success"{% endif %}>提出</td>
-                                <td{% if submit_schedule_is_active %} class="table-success"{% endif %}>
-                                    {% if submit_schedule %}
-                                    {{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}
-                                    {% else %}
-                                    未設定
-                                    {% endif %}
-                                </td>
-                                <td>{{ theme_count }}</td>
-                                <td>
-                                    <a class="btn btn-success" href="{% url 'theme:submit_schedule' %}"
-                                        role="button">日程設定</a>
-                                    <a class="btn btn-primary" href="{% url 'theme:submit_list' %}"
-                                        role="button">提出案一覧</a>
-                                </td>
+                                <td{% if submit_schedule_is_active %} class="table-success" {% endif %}>提出</td>
+                                    <td{% if submit_schedule_is_active %} class="table-success" {% endif %}>
+                                        {% if submit_schedule %}
+                                        {{ submit_schedule.start_datetime }} - {{ submit_schedule.finish_datetime }}
+                                        {% else %}
+                                        未設定
+                                        {% endif %}
+                                        </td>
+                                        <td>{{ theme_count }}</td>
+                                        <td>-</td>
+                                        <td>
+                                            <a class="btn btn-success" href="{% url 'theme:submit_schedule' %}"
+                                                role="button">日程設定</a>
+                                            <a class="btn btn-primary" href="{% url 'theme:submit_list' %}"
+                                                role="button">提出案一覧</a>
+                                        </td>
                             </tr>
                             {% for vote_schedule in vote_schedule_list %}
                             <tr>
@@ -69,35 +71,41 @@ active
                                     <span class="badge badge-pill badge-danger">終了</span>
                                     {% endif %}
                                 </td>
-                                <td{% if vote_schedule.is_active %} class="table-warning"{% endif %}>{{ vote_schedule.name }}</td>
-                                <td{% if vote_schedule.is_active %} class="table-warning"{% endif %}>
-                                    {{ vote_schedule.start_datetime }} - {{ vote_schedule.finish_datetime }}
-                                </td>
-                                <td>{{ vote_schedule.theme_list.count }}</td>
-                                <td>
-                                    <a class="btn btn-success" href="{% url 'theme:vote_schedule_update' vote_schedule.id %}"
-                                        role="button">日程編集</a>
-                                    {% if vote_schedule.get_status == 'pending' %}
-                                    <a class="btn btn-primary" href="{% url 'theme:vote_list_pending' vote_schedule.id %}"
-                                        role="button">投票候補選択</a>
-                                    {% elif vote_schedule.get_status == 'active' %}
-                                    <a class="btn btn-warning" href="{% url 'theme:vote_result' vote_schedule.id %}"
-                                        role="button">速報</a>
-                                    {% else %}
-                                    <a class="btn btn-danger" href="{% url 'theme:vote_result' vote_schedule.id %}"
-                                        role="button">結果</a>
-                                    {% endif %}
-                                </td>
+                                <td{% if vote_schedule.is_active %} class="table-warning" {% endif %}>
+                                    {{ vote_schedule.name }}</td>
+                                    <td{% if vote_schedule.is_active %} class="table-warning" {% endif %}>
+                                        {{ vote_schedule.start_datetime }} - {{ vote_schedule.finish_datetime }}
+                                        </td>
+                                        <td>{{ vote_schedule.theme_list.count }}</td>
+                                        <td>{{ vote_schedule.get_total_count }}</td>
+                                        <td>
+                                            <a class="btn btn-success"
+                                                href="{% url 'theme:vote_schedule_update' vote_schedule.id %}"
+                                                role="button">日程編集</a>
+                                            {% if vote_schedule.get_status == 'pending' %}
+                                            <a class="btn btn-primary"
+                                                href="{% url 'theme:vote_candidate' vote_schedule.id %}"
+                                                role="button">投票候補選択</a>
+                                            {% elif vote_schedule.get_status == 'active' %}
+                                            <a class="btn btn-warning"
+                                                href="{% url 'theme:vote_result' vote_schedule.id %}"
+                                                role="button">速報</a>
+                                            {% else %}
+                                            <a class="btn btn-danger"
+                                                href="{% url 'theme:vote_result' vote_schedule.id %}"
+                                                role="button">結果</a>
+                                            {% endif %}
+                                        </td>
                             </tr>
                             {% endfor %}
                             <tr>
                                 <td scope="row"></td>
                                 {% if submit_schedule %}
-                                <td colspan="3">投票日程を追加する場合は、右のボタンを押してください</td>
+                                <td colspan="4">投票日程を追加する場合は、右のボタンを押してください</td>
                                 <td><a href="{% url 'theme:vote_schedule_create' %}" class="btn btn-success"
                                         role="button">日程追加</a></td>
                                 {% else %}
-                                <td colspan="3" class="text-danger">投票日程を追加する場合は、まず提出日程を設定してください</td>
+                                <td colspan="4" class="text-danger">投票日程を追加する場合は、まず提出日程を設定してください</td>
                                 <td><a href="#" class="btn btn-success disabled" role="button">日程追加</a></td>
                                 {% endif %}
                             </tr>

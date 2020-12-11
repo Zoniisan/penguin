@@ -57,6 +57,10 @@ class NormalSubmitView(RedirectIfNotIdentified, BaseSubmitView):
         if not SubmitSchedule.objects.is_active():
             messages.error(request, '統一テーマ案提出日程外です。')
             return redirect('home:index')
+        # 正規学生以外
+        if request.user.affiliation != 'student':
+            messages.error(request, '正規学生以外はこの操作を行えません。')
+            return redirect('home:index')
 
         return super().get(request, **kwargs)
 

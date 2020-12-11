@@ -26,19 +26,19 @@ active
             <div class="card-body">
                 {% if vote_schedule.get_status == 'active' %}
                 <div class="alert alert-warning" role="alert">
-                    現在投票中です。
+                    現在投票中です。総得票数は {{ vote_schedule.get_total_count }} 票です。
                 </div>
                 {% elif vote_schedule.get_status == 'finished' %}
                 <div class="alert alert-danger" role="alert">
-                    投票期間は終了しました。
+                    投票期間は終了しました。総得票数は {{ vote_schedule.get_total_count }} 票です。
                 </div>
                 {% endif %}
-                <div class="table-responsive">
+                <div class="table-responsive text-nowrap">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>内容</th>
-                                <th>獲得票数</th>
+                                <th>得票数</th>
                                 <th>投稿者</th>
                                 <th>投稿日時</th>
                             </tr>

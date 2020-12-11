@@ -9,6 +9,12 @@ table.table-clickable tr {
     cursor: pointer;
 }
 
+table.table-check tr {
+    /* table-check の場合も、ポインターを変更 */
+    cursor: pointer;
+}
+
+
 span.select2-selection {
     /* select2 利用時、初期状態の幅を調整 */
     min-width: 40vw;

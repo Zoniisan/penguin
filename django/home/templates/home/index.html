@@ -54,6 +54,17 @@ active
 </div>
 {% endif %}
 
+<!-- Not Student Alert -->
+{% if request.user.affiliation != 'student' %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-danger" role="alert">
+            認証用サーバーから、あなたは正規学生以外であるという情報が送信されました。ほとんどの機能が制限されます。
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Identify Alert -->
 {% if not request.user.is_identified %}
 <div class="row mb-2">
@@ -92,6 +103,7 @@ active
     </div>
 </div>
 
+{% if request.user.is_student %}
 <!-- Theme / SubmitSchedule -->
 {% if submit_schedule_is_active %}
 <div class="row">
@@ -119,7 +131,7 @@ active
                     <a class="btn btn-info" href="{% url 'theme:submit_normal_submit' %}" role="button">統一テーマ案提出</a>
                 </div>
                 {% else %}
-                あなたは既に統一テーマ案を提出しています。
+                すでに提出しています。
                 {% endif %}
                 {% else %}
                 統一テーマ案を提出するためには、<a href="{% url 'home:auth_identify_token_create' %}">個人情報の入力</a>が必要です。
@@ -145,7 +157,10 @@ active
                         <tr>
                             <th scope="row">投票日程</th>
                             <td>{{ obj.vote_schedule.start_datetime }} - {{ obj.vote_schedule.finish_datetime }}</td>
-                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>詳細</th>
+                            <td>{{ obj.vote_schedule.description }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -153,16 +168,18 @@ active
             <div class="card-footer">
                 {% if obj.can_vote %}
                 <div class="text-right">
-                    <a class="btn btn-warning" href="{% url 'theme:vote' obj.vote_schedule.id %}" role="button">統一テーマ案投票</a>
+                    <a class="btn btn-warning" href="{% url 'theme:vote_list' obj.vote_schedule.id %}"
+                        role="button">統一テーマ案投票</a>
                 </div>
                 {% else %}
-                あなたは既に統一テーマ案に投票しています。
+                すでに投票しています。投票ありがとうございました！
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
+{% endif %}
 
 {% else %}
 <div class="alert alert-primary" role="alert">
