@@ -8,5 +8,5 @@ var sortable = Sortable.create(sortable_tbody, {
             sortable_form.querySelector(field_id).value = i;
         }
     },
-    delay: 300
+    delay: 50,
 });

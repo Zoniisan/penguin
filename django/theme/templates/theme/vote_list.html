@@ -25,23 +25,32 @@
                     <li>投票者の個人情報は記録されません。</li>
                     <li>案は毎回ランダムな並び順で表示されます。</li>
                 </ul>
+                {% if not can_vote %}
+                <div class="alert alert-danger" role="alert">
+                    あなたは投票済みです！投票ありがとうございました！
+                </div>
+                {% endif %}
                 <table class="table table-hover table-clickable">
                     <thead>
                         <tr>
                             <th>統一テーマ案</th>
+                            <th style="width: 10%;">Tweet</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for theme in theme_list %}
                         <tr data-toggle="modal" data-target="#modelId-{{ theme.id }}">
                             <td>{{ theme.theme }}</td>
+                            <td><a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button"
+                                    data-size="large"
+                                    data-text="{{ theme.theme }}&#010;&#010;11月祭統一テーマ案投票（{{ vote_schedule }}）実施中！京大生なら誰でも投票できます！&#010;"
+                                    data-hashtags="NF統一テーマ案投票" data-lang="ja" data-show-count="false">Tweet</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-
         {% for theme in theme_list %}
         <!-- Modal -->
         <div class="modal fade" id="modelId-{{ theme.id }}" tabindex="-1" role="dialog"
@@ -49,7 +58,7 @@
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">この統一テーマ案に投票しますか？</h5>
+                        <h5 class="modal-title">統一テーマ案詳細</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -65,8 +74,13 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        {% if can_vote %}
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
-                        <a class="btn btn-success" href="{% url 'theme:vote_create' vote_schedule.id theme.id %}" role="button">投票する</a>
+                        <a class="btn btn-success" href="{% url 'theme:vote_create' vote_schedule.id theme.id %}"
+                            role="button">投票する</a>
+                        {% else %}
+                        <p>投票済みです。</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -75,3 +89,7 @@
     </div>
 </div>
 {% endblock contents %}
+
+{% block extrajs %}
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+{% endblock extrajs %}

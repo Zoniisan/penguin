@@ -166,14 +166,24 @@ active
                 </table>
             </div>
             <div class="card-footer">
-                {% if obj.can_vote %}
-                <div class="text-right">
-                    <a class="btn btn-warning" href="{% url 'theme:vote_list' obj.vote_schedule.id %}"
-                        role="button">統一テーマ案投票</a>
+                <div class="row">
+                    <div class="col">
+                        {% if not obj.can_vote %}
+                        投票ありがとうございました！Twitter でシェア！
+                        {% endif %}
+                    </div>
+                    <div class="col text-right">
+                        <div class="text-right">
+                            {% if obj.can_vote %}
+                            <a class="btn btn-warning" href="{% url 'theme:vote_list' obj.vote_schedule.id %}"
+                                role="button">統一テーマ案投票</a>
+                            {% else %}
+                            <a class="btn btn-info" href="{% url 'theme:vote_list' obj.vote_schedule.id %}"
+                                role="button">Twitter でシェア</a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                {% else %}
-                すでに投票しています。投票ありがとうございました！
-                {% endif %}
             </div>
         </div>
     </div>

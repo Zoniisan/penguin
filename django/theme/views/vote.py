@@ -84,9 +84,8 @@ class ListView(UserPassesTestMixin, generic.TemplateView):
             get_object_or_404(VoteSchedule, id=kwargs['vote_schedule_id'])
 
     def test_func(self):
-        # 投票期間内 and 投票済みでない
-        return self.vote_schedule.get_status() == 'active' \
-            and self.vote_schedule.can_vote_check(self.request.user)
+        # 投票期間内
+        return self.vote_schedule.get_status() == 'active'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -100,6 +99,10 @@ class ListView(UserPassesTestMixin, generic.TemplateView):
         # ランダムに並び替えて出力
         context['theme_list'] = \
             random.sample(sorted_theme_list, len(sorted_theme_list))
+
+        # 投票済みかどうかを出力
+        context['can_vote'] = \
+            self.vote_schedule.can_vote_check(self.request.user)
 
         return context
 
@@ -154,10 +157,10 @@ class CandidateView(ThemeStaffOnlyMixin, generic.FormView):
 
     result_vote_schedule_id が指定されている
         →その投票日程の候補から、今回の候補を選択。
-        　　　　統一テーマはこの投票日程の得票数順に表示される。
+        　　　　　　　　統一テーマはこの投票日程の得票数順に表示される。
     otherwise
         →全ての提出された統一テーマ案から、今回の候補を選択。
-        　　　　統一テーマは投稿日時順に表示される。
+        　　　　　　　　統一テーマは投稿日時順に表示される。
     """
     template_name = 'theme/vote_candidate.html'
     form_class = NoneForm
