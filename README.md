@@ -6,7 +6,7 @@ PErsonal New-generation Graphic User Interface for November festival
 ## Release
 `master` ブランチに push すると下記サイトにリリースされます。
 
-https://dev-penguin.zuya.tokyo/
+https://penguin.zuya.tokyo/
 
 * このサイトは PENGUIN を模した開発成果物です。
 * 11 月祭に関する情報や、**個人情報は絶対に入力しない**でください。
@@ -23,7 +23,7 @@ https://dev-penguin.zuya.tokyo/
 
 情報は下記 Wiki サイトに掲載します。
 
-https://dev-wiki.zuya.tokyo/penguin/
+https://wiki.zuya.tokyo/penguin/
 
 ## Development
 開発する際は次の手順に従ってください。
@@ -64,7 +64,7 @@ docker-compose -f docker-compose.dev.yml exec django python manage.py [COMMAND]
 * まずはこのリポジトリを見つけてくれてありがとうございます。
 * このリポジトリの owner は非エンジニアで知識や技術がほぼありません。
 * そのため、PR を送信していただいたら多分何も言わずに accept します。
-    * そのまま自動的に https://dev-penguin.zuya.tokyo に release されます。
+    * そのまま自動的に https://penguin.zuya.tokyo に release されます。
 * 「ここが酷い」とか「新しいこんな機能どうですか」とかあれば Issue を立てるなどしてください。
 * 今の所 Issue / PR の作成、及びブランチ名に係るレギュレーションは定めません。
 
