@@ -152,14 +152,14 @@ class SubmitSchedule(models.Model):
 
 class VoteSchedule(models.Model):
     class Meta:
-        verbose_name = '投票期間'
+        verbose_name = '投票日程'
         verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.name
 
     def get_status(self):
-        """投票期間の状態を判定
+        """投票日程の状態を判定
 
         Returns:
             str: 'pending': 開始前, 'active': 投票中, 'finished': 終了
@@ -174,7 +174,7 @@ class VoteSchedule(models.Model):
             return 'finished'
 
     def is_active(self):
-        """投票期間の状態が active かどうかを判定
+        """投票日程の状態が active かどうかを判定
 
         Returns:
             bool: active なら True
@@ -250,7 +250,7 @@ class Vote(models.Model):
 
     schedule = models.ForeignKey(
         'theme.VoteSchedule',
-        verbose_name='投票期間',
+        verbose_name='投票日程',
         on_delete=models.CASCADE
     )
 
@@ -282,7 +282,7 @@ class Eptid(models.Model):
 
     schedule = models.ForeignKey(
         'theme.VoteSchedule',
-        verbose_name='投票期間',
+        verbose_name='投票日程',
         on_delete=models.CASCADE
     )
 
@@ -320,7 +320,7 @@ class ThemeStaff(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.eptid
+        return self.user.get_full_name()
 
     objects = ThemeStaffManager()
 
