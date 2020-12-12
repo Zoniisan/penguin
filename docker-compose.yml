@@ -72,13 +72,13 @@ services:
             - 80:80
             - 443:443
         volumes:
-            - ./django/static/:/var/www/vhosts/dev-static.zuya.tokyo/
+            - ./django/static/:/var/www/vhosts/static.zuya.tokyo/
             - ./ssl_certs:/var/lib/https-portal
         links:
             - django
         restart: always
         environment:
-            DOMAINS: 'dev-penguin.zuya.tokyo -> http://django:8000, dev-wiki.zuya.tokyo -> http://growi:3000, dev-static.zuya.tokyo'
+            DOMAINS: 'penguin.zuya.tokyo -> http://django:8000, wiki.zuya.tokyo -> http://growi:3000, static.zuya.tokyo'
             STAGE: 'production'
             CLIENT_MAX_BODY_SIZE: '100M'
 
