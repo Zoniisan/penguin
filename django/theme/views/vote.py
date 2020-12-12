@@ -2,6 +2,7 @@ import random
 
 from bootstrap_datepicker_plus import DateTimePickerInput
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
@@ -104,6 +105,9 @@ class ListView(UserPassesTestMixin, generic.TemplateView):
         context['can_vote'] = \
             self.vote_schedule.can_vote_check(self.request.user)
 
+        # ツイート用: BASE_URL を取得
+        context['BASE_URL'] = settings.BASE_URL
+        
         return context
 
 
