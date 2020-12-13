@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # third-party
     'bootstrap4',
     'bootstrap_datepicker_plus',
+    'channels',
     'countable_field',
     'django_celery_beat',
     'django_celery_results',
@@ -219,3 +220,9 @@ if SLACK_BACKEND != 'django_slack.backends.ConsoleBackend':
     SLACK_BACKEND_FOR_QUEUE = env('SLACK_BACKEND_FOR_QUEUE')
     SLACK_TOKEN = env('SLACK_TOKEN')
     SLACK_CHANNEL = env('SLACK_CHANNEL')
+
+
+# Django Channels
+# https://pypi.org/project/channels/
+
+ASGI_APPLICATION = "penguin.asgi.application"
