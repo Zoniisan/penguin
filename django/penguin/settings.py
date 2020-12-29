@@ -62,7 +62,9 @@ INSTALLED_APPS = [
 
     # penguin
     'home',
-    'theme'
+    'theme',
+    'project',
+    'register'
 ]
 
 MIDDLEWARE = [

@@ -14,3 +14,8 @@ kana_validator = RegexValidator(
     regex=r'^[ぁ-んー]+$',
     message='ひらがなで入力してください'
 )
+
+symbol_validator = RegexValidator(
+    regex=r'^[A-Z]$',
+    message='半角英大文字 1 文字で入力してください'
+)
