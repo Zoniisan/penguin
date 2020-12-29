@@ -5,12 +5,15 @@ verify_ssl = true
 
 [packages]
 celery = "==5.0.2"
+channels = "==3.0.2"
+channels-redis = "==3.2.0"
 Django = "==3.1.3"
 django-bootstrap4 = "==2.3.1"
 django-bootstrap-datepicker-plus = "==3.0.5"
 django-celery-beat = "==2.1.0"
 django-celery-results = "==2.0.0"
 django-countable-field = '==1.3'
+django-debug-toolbar = "==3.2"
 django-environ = "==0.4.5"
 django-ordered-model = "==3.4.1"
 django-redis = "==4.12.1"

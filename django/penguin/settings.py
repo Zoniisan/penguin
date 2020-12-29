@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'bootstrap_datepicker_plus',
     'countable_field',
+    'debug_toolbar',
     'django_celery_beat',
     'django_celery_results',
     'django_select2',
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -221,3 +223,21 @@ if SLACK_BACKEND != 'django_slack.backends.ConsoleBackend':
     SLACK_BACKEND_FOR_QUEUE = env('SLACK_BACKEND_FOR_QUEUE')
     SLACK_TOKEN = env('SLACK_TOKEN')
     SLACK_CHANNEL = env('SLACK_CHANNEL')
+
+
+# channels
+# https://channels.readthedocs.io/en/latest/index.html
+ASGI_APPLICATION = "penguin.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
+
+# Django Debug Toolbar
+# https://django-debug-toolbar.readthedocs.io/en/latest/
+
+INTERNAL_IPS = ['172.18.0.1']
