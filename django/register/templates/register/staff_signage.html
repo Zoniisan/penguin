@@ -54,8 +54,8 @@ active
             <div class="card-header">
                 <h3>企画登録 QR コード</h3>
             </div>
-            <div class="card-body">
-                QR
+            <div class="card-body text-center">
+                <img id="token-qrcode">
             </div>
             <div class="card-footer">
                 QR コードを使用すると自動的に更新されます。<br>
@@ -120,8 +120,8 @@ active
     // トークン受信
     tokenSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        document.querySelector('#token-qrcode').value = (data.qrcode);
-        document.querySelector('#token-create-datetime').innerHTML = (data.create_datetime);
+        document.querySelector('#token-qrcode').src = data.qrcode;
+        document.querySelector('#token-create-datetime').innerHTML = data.create_datetime;
     };
 
 </script>

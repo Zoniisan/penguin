@@ -1,6 +1,6 @@
 import base64
 import json
-from io import StringIO
+from io import BytesIO
 
 import qrcode
 from asgiref.sync import async_to_sync
@@ -52,24 +52,29 @@ class TokenConsumer(WebsocketConsumer):
             )
         }))
 
-    def get_qr_code(verify_token):
+    def get_qrcode(self, verify_token):
         """token から qrcode を base64 形式で取得
         """
         # URL を取得
-        text = ''.join(
+        text = ''.join([
             settings.BASE_URL,
             reverse('home:index'),
-            verify_token.token
-        )
+            str(verify_token.id)
+        ])
 
         # qrcode の base64 を作成
-        qr = qrcode.make(text)
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=4,
+            border=4,
+        )
+        qr.add_data(text)
+        qr.make(fit=True)
         img = qr.make_image()
-        img_buffer = StringIO.StringIO()
-        img.save(img_buffer, 'png')
-        res = img_buffer.getvalue()
-        img_buffer.close()
-        b64 = base64.b64encode(res)
+        buffered = BytesIO()
+        img.save(buffered, format="PNG")
+        b64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         # src を返す
         return 'data:image/png;base64,{0}'.format(b64)
