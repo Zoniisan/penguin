@@ -21,6 +21,7 @@ urlpatterns = [
     # penguin
     path('', include('home.urls')),
     path('theme/', include('theme.urls')),
+    path('register/', include('register.urls')),
 
     # admin
     path('admin/', admin.site.urls),

@@ -2,6 +2,7 @@ import uuid
 
 from django.core.validators import RegexValidator
 from django.db import models
+from home.models import User
 from penguin import validators
 
 
@@ -193,4 +194,87 @@ class VerifiedUser(models.Model):
     create_datetime = models.DateTimeField(
         verbose_name='作成日時',
         auto_now_add=True
+    )
+
+
+class RegisterStaffManager(models.Manager):
+    def check_perm(self, user):
+        """あるユーザーが企画登録担当スタッフかどうかを判定
+
+        Args:
+            user(User): ユーザー
+        Returns:
+            bool: 担当スタッフなら Ture (システム管理者も True)
+        """
+        return user.is_authenticated and (
+            RegisterStaff.objects.filter(user=user).exists() or user.is_admin
+        )
+
+    def get_user_list(self):
+        """統一テーマ管理スタッフを全て求める
+
+        Returns:
+            queryset<User>: 統一テーマ管理スタッフのクエリセット
+        """
+        return User.objects.filter(themestaff__isnull=False)
+
+
+class RegisterStaff(models.Model):
+    class Meta:
+        verbose_name = '企画登録担当スタッフ'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.user.get_full_name()
+
+    objects = RegisterStaffManager()
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.OneToOneField(
+        'home.User',
+        verbose_name='ユーザー',
+        on_delete=models.CASCADE
+    )
+
+
+class RegisterSlack(models.Model):
+    class Meta:
+        verbose_name = '企画登録slack'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.slack_ch
+
+    def verbose_slack_ch(self):
+        """slack_ch を # つきで表示
+
+        Returns:
+            str: #channel
+        """
+        return '#{0}'.format(self.slack_ch)
+
+    def save(self, **kwargs):
+        """このインスタンスはたかだか 1 件のみ存在
+
+        セーブ前に必ず全削除する
+        """
+        # インスタンス全削除
+        RegisterSlack.objects.all().delete()
+        super().save(**kwargs)
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    slack_ch = models.CharField(
+        verbose_name='Slack_ch',
+        max_length=50,
+        help_text='# は除いて登録してください'
     )
