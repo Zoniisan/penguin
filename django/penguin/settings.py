@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # third-party
     'bootstrap4',
     'bootstrap_datepicker_plus',
+    'channels',
     'countable_field',
     'debug_toolbar',
     'django_celery_beat',

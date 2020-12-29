@@ -11,4 +11,9 @@ urlpatterns = [
         views.staff.MenuView.as_view(),
         name='staff_menu'
     ),
+    path(
+        'staff/signage',
+        views.staff.SignageView.as_view(),
+        name='staff_signage'
+    ),
 ]

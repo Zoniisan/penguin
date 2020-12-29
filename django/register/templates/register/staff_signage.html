@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'flame.html' %}
 {% block headtitle %}
 企画登録管理
 {% endblock headtitle %}
@@ -13,44 +13,116 @@ active
 <span class="breadcrumb-item active">企画登録管理</span>
 {% endblock breadcrumb %}
 
-{% block contents %}
+{% block flame_contents %}
 
 <div class="row">
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <h3>企画登録管理</h3>
+                <h3>お呼び出し中の整理番号</h3>
             </div>
             <div class="card-body">
-                <table class="table table-hover table-clickable">
+                <table class="table">
                     <thead>
                         <tr>
-                            <th>機能</th>
+                            <th>模擬1</th>
+                            <th>模擬2</th>
+                            <th>一般1</th>
+                            <th>一般2</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-href="{% url 'home:staff_member' %}">
-                            <td scope="row">
-                                企画登録会 窓口業務&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
-                                <small class="text-muted">企画登録会の窓口業務を開始します。</small>
-                            </td>
-                        </tr>
-                        <tr data-href="{% url 'home:staff_member' %}">
-                            <td scope="row">
-                                企画登録会 案内表示&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
-                                <small class="text-muted">企画登録会において、企画登録 QR コードの表示と整理番号の呼び出しを行います。</small>
-                            </td>
-                        </tr>
-                        <tr data-href="{% url 'home:staff_member' %}">
-                            <td scope="row">
-                                企画登録会 監督業務・企画登録情報管理&nbsp;<span class="badge badge-pill badge-info">Regulated</span><br>
-                                <small class="text-muted">企画登録会の状況と、登録された企画の情報を表示・編集します。</small>
-                            </td>
+                        <tr class="display-2">
+                            <td scope="col">21</td>
+                            <td>22</td>
+                            <td>25</td>
+                            <td>26</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="card-footer">
+                保留中：11
+            </div>
         </div>
     </div>
 </div>
-{% endblock contents %}
+
+<div class="row">
+    <div class="col-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>企画登録 QR コード</h3>
+            </div>
+            <div class="card-body">
+                QR
+            </div>
+            <div class="card-footer">
+                QR コードを使用すると自動的に更新されます。<br>
+                最終更新：<span id="token-create-datetime"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-9">
+        <div class="card">
+            <div class="card-header">
+                <h3>企画登録方法</h3>
+            </div>
+            <div class="card-body text-center">
+                <div class="row">
+                    <div class="col">
+                        <i class="fas fa-arrow-left fa-5x mb-4"></i>
+                        <i class="fas fa-qrcode fa-5x mb-4"></i>
+                        <p class="h1">左の企画登録<br>QRコードを読み込む</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-user fa-5x mb-4"></i>
+                        <p class="h1">（未入力の場合）<br>個人情報を入力</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-edit fa-5x mb-4"></i>
+                        <p class="h1">企画情報を入力</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-bullhorn fa-5x mb-4"></i>
+                        <p class="h1">お呼び出しまで<br>お待ちください</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="btn btn-secondary" href="{% url 'register:staff_menu' %}" role="button">もどる</a>
+    </div>
+</div>
+{% endblock flame_contents %}
+
+{% block extrajs %}
+<script>
+    const tokenSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/register/token/'
+    );
+
+    // トークン更新要求（300ms待機後）
+    setTimeout(function(){tokenSocket.send(JSON.stringify({
+        'update': true
+    }))}, 300);
+
+    // トークン受信
+    tokenSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#token-qrcode').value = (data.qrcode);
+        document.querySelector('#token-create-datetime').innerHTML = (data.create_datetime);
+    };
+
+</script>
+{% endblock extrajs %}

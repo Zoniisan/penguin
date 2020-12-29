@@ -21,6 +21,8 @@ django-select2 = "==7.4.2"
 django-slack = "==5.16.0"
 djangorestframework-datatables = "==0.5.2"
 gunicorn = "==20.0.4"
+Pillow = "==8.0.1"
+qrcode = "==6.1"
 
 [dev-packages]
 autopep8 = "*"
