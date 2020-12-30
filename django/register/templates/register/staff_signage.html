@@ -49,13 +49,14 @@ active
 </div>
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-xl-3">
         <div class="card">
             <div class="card-header">
                 <h3>企画登録 QR コード</h3>
             </div>
             <div class="card-body text-center">
                 <img id="token-qrcode">
+                <p id="token-url"></p>
             </div>
             <div class="card-footer">
                 QR コードを使用すると自動的に更新されます。<br>
@@ -63,7 +64,7 @@ active
             </div>
         </div>
     </div>
-    <div class="col-9">
+    <div class="col-xl-9">
         <div class="card">
             <div class="card-header">
                 <h3>企画登録方法</h3>
@@ -113,14 +114,17 @@ active
     );
 
     // トークン更新要求（300ms待機後）
-    setTimeout(function(){tokenSocket.send(JSON.stringify({
-        'update': true
-    }))}, 300);
+    setTimeout(function () {
+        tokenSocket.send(JSON.stringify({
+            'update': true
+        }));
+    }, 300);
 
     // トークン受信
     tokenSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         document.querySelector('#token-qrcode').src = data.qrcode;
+        document.querySelector('#token-url').innerHTML = data.url;
         document.querySelector('#token-create-datetime').innerHTML = data.create_datetime;
     };
 

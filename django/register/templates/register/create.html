@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+企画登録
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active">企画登録</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>企画登録</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-success mb-0">登録</button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+{% endblock %}

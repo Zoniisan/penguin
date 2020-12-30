@@ -5,6 +5,17 @@ from register import views
 app_name = 'register'
 
 urlpatterns = [
+    # views/root.py
+    path(
+        'verify/<slug:token>',
+        views.root.VerifyView.as_view(),
+        name='verify'
+    ),
+    path(
+        'create',
+        views.root.CreateView.as_view(),
+        name='create'
+    ),
     # views/staff.py
     path(
         'staff/menu',

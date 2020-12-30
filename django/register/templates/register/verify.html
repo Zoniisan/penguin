@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+しばらくお待ちください
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">しばらくお待ちください</a>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-body">
+                    <p>しばらくお待ちください</p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script>
+    const tokenSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/register/token/'
+    );
+
+    // トークン更新要求（300ms待機後）
+    setTimeout(function () {
+        tokenSocket.send(JSON.stringify({
+            'update': true
+        }))
+    }, 300);
+
+    // 企画登録ページにリダイレクト
+    setTimeout(function () {
+            location.href="../create"
+    }, 300);
+</script>
+{% endblock %}
