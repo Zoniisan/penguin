@@ -26,6 +26,17 @@ class UserMultipleWidget(s2forms.ModelSelect2MultipleWidget):
     ]
 
 
+class StaffMultipleWidget(s2forms.ModelSelect2MultipleWidget):
+    search_fields = [
+        "stid__icontains",
+        "last_name__icontains",
+        "first_name__icontains",
+        "last_name_kana__icontains",
+        "first_name_kana__icontains",
+    ]
+    queryset = User.objects.staff_list()
+
+
 class LoginForm(forms.Form):
     eptid = forms.CharField(
         label='EPTID',

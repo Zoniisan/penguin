@@ -1,16 +1,25 @@
 import uuid
 
 from django.db import models
+from ordered_model.models import OrderedModel
 from penguin import validators
 
 
-class Kind(models.Model):
-    class Meta():
+class Kind(OrderedModel):
+    class Meta(OrderedModel.Meta):
         verbose_name = '企画種別'
         verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.name
+
+    def verbose_slack_ch(self):
+        """slack_ch を # つきで表示
+
+        Returns:
+            str: #channel
+        """
+        return '#{0}'.format(self.slack_ch)
 
     id = models.UUIDField(
         primary_key=True,
