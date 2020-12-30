@@ -19,7 +19,8 @@ env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False),
     SLACK_BACKEND=(str, 'django_slack.backends.ConsoleBackend'),
-    STATIC_URL=(str, '/static/')
+    STATIC_URL=(str, '/static/'),
+    ALLOWED_HOST=(str, None)
 )
 # reading .env file
 environ.Env.read_env()
@@ -37,7 +38,7 @@ SECRET_KEY = env('SECRET_KEY')
 # .env file に DEBUG 属性を書かなければ .env = True となる。
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1'] + [env('ALLOWED_HOST')]
 
 # Application definition
 INSTALLED_APPS = [
