@@ -203,6 +203,11 @@ urlpatterns = [
         name='staff_menu'
     ),
     path(
+        'staff/master_data',
+        views.staff.MasterDataView.as_view(),
+        name='staff_master_data'
+    ),
+    path(
         'staff/member',
         views.staff.MemberView.as_view(),
         name='staff_member'
