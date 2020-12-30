@@ -16,6 +16,11 @@ urlpatterns = [
         views.root.CreateView.as_view(),
         name='create'
     ),
+    path(
+        'success/<slug:pk>',
+        views.root.SuccessView.as_view(),
+        name='success'
+    ),
     # views/staff.py
     path(
         'staff/menu',

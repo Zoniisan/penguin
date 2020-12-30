@@ -1,7 +1,7 @@
 import uuid
 
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import IntegrityError, models
 from home.models import User
 from penguin import validators
 
@@ -13,6 +13,41 @@ class Registration(models.Model):
 
     def __str__(self):
         return '{0}: {1}'.format(self.verbose_id, self.group)
+
+    def set_verbose_id(self, retry_number=None):
+        """登録コードを設定
+
+        通常は引数なしで呼び出すこと
+        """
+        # 同一企画種別の登録件数を取得
+        try_number = retry_number if retry_number else\
+            Registration.objects.filter(kind=self.kind).count()
+
+        try:
+            self.verbose_id \
+                = 'x{0}-{1}'.format(self.kind.symbol, str(try_number).zfill(3))
+            self.save()
+        except IntegrityError:
+            # すでに同一登録コードのインスタンスが存在する場合
+            # 数字を 1 増してリトライ
+            self.set_verbose_id(try_number + 1)
+
+    def set_call_id(self, retry_number=None):
+        """整理番号を設定
+
+        通常は引数なしで呼び出すこと
+        """
+        # 企画登録件数を取得
+        try_number = retry_number if retry_number else\
+            Registration.objects.all().count()
+
+        try:
+            self.call_id = str(try_number).zfill(3)
+            self.save()
+        except IntegrityError:
+            # すでに同一整理番号のインスタンスが存在する場合
+            # 数字を 1 増してリトライ
+            self.set_call_id(try_number + 1)
 
     id = models.UUIDField(
         primary_key=True,
@@ -30,7 +65,8 @@ class Registration(models.Model):
         max_length=6,
         validators=[verbose_id_validator],
         unique=True,
-        help_text='Ex: xA-000'
+        help_text='Ex: xA-000',
+        null=True
     )
 
     kind = models.ForeignKey(
@@ -81,7 +117,8 @@ class Registration(models.Model):
     )
 
     call_id = models.IntegerField(
-        verbose_name='整理番号'
+        verbose_name='整理番号',
+        unique=True, null=True
     )
 
     finish_datetime = models.DateTimeField(
