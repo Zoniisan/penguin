@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+窓口業務
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<div class="container-fluid">
+    <div class="alert alert-danger" role="alert">
+        <div class="row">
+            <div class="col">窓口業務を終了する際は必ず「終了」ボタンを押してください！</div>
+            <div class="col text-right"><a class="btn btn-success"
+                    href="{% url 'register:staff_window_close' window.id %}" role="button">終了</a></div>
+        </div>
+
+    </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col-8">
+        <div class="alert alert-info" role="alert">
+            <strong>窓口名</strong>&nbsp;{{ window.name }}
+            <strong>担当企画種別</strong>&nbsp;{% for kind in window.kind_list.all %}{% if not forloop.first %},&nbsp;{% endif %}{{ kind }}{% endfor %}
+        </div>
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>企画登録</h3>
+                </div>
+                {% if form %}
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-success mb-0">登録</button>
+                    {% endbuttons %}
+                </div>
+                {% else %}
+                <div class="card-body">
+                    <p>右から登録する企画を選択してください。</p>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h3>待機中の企画</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>整理番号</th>
+                            <th>企画種別<br>企画</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waiting">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>保留中の企画</h3>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 企画種別ごとの飲食物提供情報 -->
+{{ food_list|json_script:"food-data" }}
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+<script>
+    // 企画種別ごとの飲食物提供情報
+    var foodData = JSON.parse(document.getElementById('food-data').textContent);
+
+    $(function () {
+        // 企画種別を変更するごとに発動
+        $('#id_kind').on('change', function () {
+            // 選択した 企画種別の ID
+            var kind_id = $(this).val();
+            // 飲食物提供情報を取得
+            if (kind_id) {
+                var food = foodData.find(element => element.kind_id == kind_id).food;
+            }
+            switch (food) {
+                case 'true':
+                    // 飲食物提供必須
+                    $("#id_food").prop({
+                        "checked": true,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('この企画種別は飲食物提供<strong>必須</strong>です！')
+                    break;
+                case 'false':
+                    // 飲食物提供禁止
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('この企画種別は飲食物提供<strong>禁止</strong>です！')
+                    break;
+                case 'select':
+                    // 飲食物提供選択可能
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": false
+                    });
+                    $("#alert-food").html('この企画種別は飲食物を提供するかどうかを選択できます。')
+                    break;
+                default:
+                    // 企画種別未選択
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('企画種別を選択してください。')
+            }
+        }).change();
+    });
+
+    const registrationSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/register/registration/'
+    );
+
+    // 更新要求（300ms待機後）
+    setTimeout(function () {
+        registrationSocket.send(JSON.stringify({
+            'update': true
+        }))
+    }, 300);
+
+    registrationSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#waiting').innerHTML = '';
+
+        // 待機
+        for (let obj of data["waiting"]) {
+            document.querySelector('#waiting').innerHTML += '<tr><td class="h1">' + obj["call_id"] + '</td><td>' + obj["kind"] + '<br>' + obj["str"] + '</td></tr>';
+        }
+    };
+</script>
+{% endblock %}

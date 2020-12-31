@@ -15,6 +15,7 @@ active
 {% endblock breadcrumb %}
 
 {% block flame_contents %}
+<div id="test"></div>
 
 <div class="row">
     <div class="col">
@@ -24,22 +25,7 @@ active
             </div>
             <div class="card-body">
                 <table class="table">
-                    <thead>
-                        <tr>
-                            <th>模擬1</th>
-                            <th>模擬2</th>
-                            <th>一般1</th>
-                            <th>一般2</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="display-2">
-                            <td scope="col">21</td>
-                            <td>22</td>
-                            <td>25</td>
-                            <td>26</td>
-                        </tr>
-                    </tbody>
+                    <thead><tr id="called-window-name"></tr></thead>
                 </table>
             </div>
             <div class="card-footer">
@@ -116,7 +102,7 @@ active
 {% block extrajs %}
 <script>
     // unmute button
-    $("#btn-unmute").on("click", function(){
+    $("#btn-unmute").on("click", function () {
         document.querySelector("#popi").play();
         $(this).remove()
     });
@@ -144,6 +130,29 @@ active
         $("#qr-header").effect("highlight");
         // QR 更新音声
         document.querySelector("#popi").play();
+    };
+
+    const registrationSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/register/registration/'
+    );
+
+    // 更新要求（300ms待機後）
+    setTimeout(function () {
+        registrationSocket.send(JSON.stringify({
+            'update': true
+        }))
+    }, 300);
+
+    registrationSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#called-window-name').innerHTML = '';
+
+        // 呼出中
+        for (let obj of data["called"]) {
+            document.querySelector('#called-window-name').innerHTML += '<th>' + obj["window-name"] + '</th>';
+        }
     };
 </script>
 {% endblock extrajs %}

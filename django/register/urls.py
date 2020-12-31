@@ -32,4 +32,19 @@ urlpatterns = [
         views.staff.SignageView.as_view(),
         name='staff_signage'
     ),
+    path(
+        'staff/window_open',
+        views.staff.WindowOpenView.as_view(),
+        name='staff_window_open'
+    ),
+    path(
+        'staff/window/<slug:window_pk>',
+        views.staff.WindowView.as_view(),
+        name='staff_window'
+    ),
+    path(
+        'staff/window_close/<slug:pk>',
+        views.staff.WindowCloseView.as_view(),
+        name='staff_window_close'
+    ),
 ]

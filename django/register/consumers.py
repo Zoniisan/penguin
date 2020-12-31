@@ -8,7 +8,7 @@ from channels.generic.websocket import WebsocketConsumer
 from django.conf import settings
 from django.urls import reverse_lazy
 
-from register.models import VerifyToken
+from register.models import Registration, VerifyToken, Window
 
 
 class TokenConsumer(WebsocketConsumer):
@@ -77,3 +77,48 @@ class TokenConsumer(WebsocketConsumer):
 
         # src を返す
         return 'data:image/png;base64,{0}'.format(b64), url
+
+
+class RegistrationConsumer(WebsocketConsumer):
+    def connect(self):
+        # group に channel を登録
+        self.group_name = 'registration-group'
+        async_to_sync(self.channel_layer.group_add)(
+            self.group_name,
+            self.channel_name
+        )
+
+        # 通信を許可
+        self.accept()
+
+    def disconnect(self, close_code):
+        # channel を group から外す
+        async_to_sync(self.channel_layer.group_discard)(
+            self.group_name,
+            self.channel_name
+        )
+
+    def receive(self, text_data):
+        # 企画登録状況を更新
+        async_to_sync(self.channel_layer.group_send)(
+            self.group_name,
+            {
+                'type': 'send_registration',
+            }
+        )
+
+    def send_registration(self, event):
+        # JSON 形式で登録企画に関する情報を通知
+        self.send(text_data=json.dumps({
+            'waiting': [{
+                'call_id': registration.call_id,
+                'kind': str(registration.kind),
+                'str': str(registration)
+            } for registration in
+                Registration.objects.filter(status='waiting')
+                .order_by('call_id')
+            ],
+            'called': [{
+                'window-name': window.name
+            } for window in Window.objects.all().order_by('name')]
+        }))

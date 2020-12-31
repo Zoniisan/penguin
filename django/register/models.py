@@ -156,15 +156,16 @@ class Window(models.Model):
 
     name = models.CharField(
         verbose_name='名前',
-        max_length=10
+        max_length=10,
+        help_text='Ex.「模擬1」「一般2」 案内表示画面には名前順に窓口が表示されます'
     )
 
     kind_list = models.ManyToManyField(
         'project.Kind',
-        verbose_name='企画種別'
+        verbose_name='対応する企画種別'
     )
 
-    staff = models.ForeignKey(
+    staff = models.OneToOneField(
         'home.User',
         verbose_name='スタッフ',
         on_delete=models.CASCADE

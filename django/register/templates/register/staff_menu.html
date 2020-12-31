@@ -29,9 +29,9 @@ active
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-href="{% url 'home:staff_member' %}">
+                        <tr data-href="{% if window %}{% url 'register:staff_window' window.id %}{% else %}{% url 'register:staff_window_open' %}{% endif %}">
                             <td scope="row">
-                                企画登録会 窓口業務&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
+                                企画登録会 窓口業務&nbsp;{% if window %}&nbsp;<span class="text-danger">窓口業務中：{{ window.name }}</span>{% endif %}<span class="badge badge-pill badge-warning">Staff</span><br>
                                 <small class="text-muted">企画登録会の窓口業務を開始します。</small>
                             </td>
                         </tr>

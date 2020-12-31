@@ -1,5 +1,11 @@
+from django.contrib import messages
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views import generic
 from penguin import mixins
+from register.forms import RegistrationForm, WindowForm
+from register.models import Window
 
 
 class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
@@ -7,13 +13,43 @@ class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
     """
     template_name = 'register/staff_menu.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ログインしているユーザーが担当している Window のインスタンスが存在
+        # →窓口業務画面に遷移
+        if Window.objects.filter(staff=self.request.user).exists():
+            context['window'] = Window.objects.get(staff=self.request.user)
+        return context
 
-class WindowOpenView(mixins.StaffOnlyMixin, generic.TemplateView):
+
+class WindowOpenView(mixins.StaffOnlyMixin, generic.CreateView):
     """企画登録会 窓口業務 開始
 
     窓口名と対応する企画種別を選択
     """
     template_name = 'register/staff_window_open.html'
+    model = Window
+    form_class = WindowForm
+
+    def form_valid(self, form):
+        # 1 ユーザーにつき登録できる窓口は 1 件まで
+        if Window.objects.filter(staff=self.request.user).exists():
+            messages.error(
+                self.request,
+                '1 スタッフが担当できる窓口は 1 件までです！'
+                '既に開いている窓口業務画面を閉じてください。'
+            )
+            return redirect('register:staff_window_open')
+
+        # 担当 staff 登録
+        form.instance.staff = self.request.user
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'register:staff_window', kwargs={'window_pk': self.object.pk}
+        )
 
 
 class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
@@ -22,6 +58,35 @@ class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
     登録企画を選択→呼出・保留・受理・却下が可能
     """
     template_name = 'register/staff_window.html'
+
+    def get(self, request, **kwargs):
+        # 担当スタッフ以外の閲覧を阻止
+        if request.user != self.window.staff:
+            raise HttpResponseForbidden
+        return super().get(request, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Window のインスタンス
+        context['window'] = self.window
+        return context
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        # Window のインスタンスを method で使えるようにする
+        self.window = Window.objects.get(id=self.kwargs['window_pk'])
+
+
+class WindowCloseView(mixins.StaffOnlyMixin, generic.TemplateView):
+    """企画登録会 窓口業務 終了
+    """
+    template_name = 'register/staff_window_close.html'
+
+    def get(self, request, **kwargs):
+        # Window インスタンスを削除
+        obj = get_object_or_404(Window, id=kwargs['pk'])
+        obj.delete()
+        return super().get(request, **kwargs)
 
 
 class SignageView(mixins.StaffOnlyMixin, generic.TemplateView):
