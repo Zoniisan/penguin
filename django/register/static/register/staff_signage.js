@@ -65,10 +65,10 @@ $(function () {
             // 呼出中
             for (let obj of data["called"]) {
                 document.querySelector('#called-window-name').innerHTML += '<th>' + obj["window-name"] + '</th>';
-                document.querySelector('#called-registration-call-id').innerHTML += '<td id="window_' + obj["window-id"] + '">' + obj["registration-call-id"] + '</td>';
-                if (data["call_window"] == obj["window-id"]) {
-                    $('#window_' + obj["window-id"]).effect('pulsate', '', 1000);
-                    $('#window_' + obj["window-id"]).addClass('table-warning');
+                document.querySelector('#called-registration-call-id').innerHTML += '<td id="window_' + obj["window_id"] + '">' + obj["registration-call-id"] + '</td>';
+                if (data["call_window"] == obj["window_id"]) {
+                    $('#window_' + obj["window_id"]).effect('pulsate', '', 1000);
+                    $('#window_' + obj["window_id"]).addClass('table-warning');
                 }
             }
 

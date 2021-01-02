@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% load bootstrap4 %}
 
 {% block headtitle %}
@@ -14,7 +14,6 @@
             <div class="col text-right"><a class="btn btn-success"
                     href="{% url 'register:staff_window_close' window.id %}" role="button">終了</a></div>
         </div>
-
     </div>
 </div>
 {% endblock breadcrumb %}
@@ -65,131 +64,11 @@
         </table>
     </div>
 </div>
-<!-- 企画種別ごとの飲食物提供情報 -->
-{{ food_list|json_script:"food-data" }}
 <!-- 窓口情報 -->
 {{ window_id|json_script:"window-data" }}
 {% endblock contents %}
 
 {% block extrajs %}
 {{ form.media.js }}
-<script>
-    $.format = function (format) {
-        var i = 0,
-            j = 0,
-            r = "",
-            next = function (args) {
-                j += 1;
-                i += 1;
-                return args[j] !== void 0 ? args[j] : "";
-            };
-
-        for (i = 0; i < format.length; i++) {
-            if (format.charCodeAt(i) === 37) {
-                switch (format.charCodeAt(i + 1)) {
-                    case 115:
-                        r += next(arguments);
-                        break;
-                    case 100:
-                        r += Number(next(arguments));
-                        break;
-                    default:
-                        r += format[i];
-                        break;
-                }
-            } else {
-                r += format[i];
-            }
-        }
-        return r;
-    };
-
-    // 企画種別ごとの飲食物提供情報
-    var foodData = JSON.parse(document.getElementById('food-data').textContent);
-
-    $(function () {
-        // 企画種別を変更するごとに発動
-        $('#id_kind').on('change', function () {
-            // 選択した 企画種別の ID
-            var kind_id = $(this).val();
-            // 飲食物提供情報を取得
-            if (kind_id) {
-                var food = foodData.find(element => element.kind_id == kind_id).food;
-            }
-            switch (food) {
-                case 'true':
-                    // 飲食物提供必須
-                    $("#id_food").prop({
-                        "checked": true,
-                        "disabled": true
-                    });
-                    $("#alert-food").html('この企画種別は飲食物提供<strong>必須</strong>です！')
-                    break;
-                case 'false':
-                    // 飲食物提供禁止
-                    $("#id_food").prop({
-                        "checked": false,
-                        "disabled": true
-                    });
-                    $("#alert-food").html('この企画種別は飲食物提供<strong>禁止</strong>です！')
-                    break;
-                case 'select':
-                    // 飲食物提供選択可能
-                    $("#id_food").prop({
-                        "checked": false,
-                        "disabled": false
-                    });
-                    $("#alert-food").html('この企画種別は飲食物を提供するかどうかを選択できます。')
-                    break;
-                default:
-                    // 企画種別未選択
-                    $("#id_food").prop({
-                        "checked": false,
-                        "disabled": true
-                    });
-                    $("#alert-food").html('企画種別を選択してください。')
-            }
-        }).change();
-    });
-
-    const registrationSocket = new WebSocket(
-        'ws://' +
-        window.location.host +
-        '/ws/register/registration/'
-    );
-
-    var windowData = JSON.parse(document.getElementById('window-data').textContent);
-
-    // 更新要求（300ms待機後）
-    setTimeout(function () {
-        registrationSocket.send(JSON.stringify({
-            'update': true,
-            'window-id': windowData['window-id']
-        }))
-    }, 300);
-
-    registrationSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        document.querySelector('#waiting').innerHTML = '';
-        document.querySelector('#pending').innerHTML = '';
-
-        // 待機
-        for (let obj of data["waiting"]) {
-            document.querySelector('#waiting').innerHTML += $.format(
-                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-primary">呼出</a></td></tr>',
-                obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
-                    "id"],
-            );
-        }
-
-        // 保留
-        for (let obj of data["pending"]) {
-            document.querySelector('#pending').innerHTML += $.format(
-                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-primary">呼出</a></td></tr>',
-                obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
-                    "id"],
-            );
-        }
-    };
-</script>
+<script src="{% static 'register/staff_window.js' %}"></script>
 {% endblock %}

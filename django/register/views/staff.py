@@ -87,9 +87,9 @@ class WindowOpenView(mixins.StaffOnlyMixin, generic.CreateView):
 
 
 class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
-    """企画登録会 窓口業務
+    """企画登録会 窓口業務 待機状態
 
-    登録企画を選択→呼出・保留・受理・却下が可能
+    待機中・保留中の企画から呼び出したい企画を選択する
     """
     template_name = 'register/staff_window.html'
 
@@ -100,15 +100,15 @@ class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Window のインスタンス
-        context['window'] = self.window
-        context['window_id'] = {'window-id': self.window.id}
-        return context
 
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        # Window のインスタンスを method で使えるようにする
-        self.window = Window.objects.get(id=self.kwargs['window_pk'])
+        # Window のインスタンスを URL に応じて取得
+        window = Window.objects.get(id=self.kwargs['window_pk'])
+        # template 描画用
+        context['window'] = window
+        # websocket 送信用（表示される企画の絞り込みに利用）
+        context['window_id'] = {'window_id': window.id}
+
+        return context
 
 
 class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
@@ -122,29 +122,33 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
     success_url = reverse_lazy('register:staff_window_open')
 
     def get(self, request, **kwargs):
-        # ステータス更新
+        # 該当企画の状態を「対応中」に更新
         self.registration.call(kwargs['window_pk'])
-        return super().get(request, **kwargs)
         # スタッフが担当している窓口の状況に応じ、必要ならリダイレクト
         redirect = get_redirect(request.user, 'staff_window_update')
         return redirect if redirect else super().get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Window のインスタンス
+
+        # Window のインスタンス（template 描画用）
         context['window'] = self.window
-        context['window_id'] = {'window-id': self.window.id}
+        # Window のインスタンス（websocket 送信用）
+        context['window_id'] = {'window_id': self.window.id}
+        # 企画種別ごとの飲食物提供情報を取得
         context['food_list'] = [{
             'kind_id': kind.id,
             'food': kind.food
         } for kind in Kind.objects.all()]
+
         return context
 
     def form_valid(self, form):
-        # 先回りで保存
+        # 先回りで保存して登録コードを付与
         self.object = form.save()
+        self.object.set_verbose_id()
 
-        # 状態更新
+        # 押されたボタンに応じ、該当企画の状態を更新
         if 'btn_refuse' in form.data:
             self.object.refuse(self.request.user)
             messages.error(self.request, '却下しました！')
@@ -159,7 +163,7 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        # Window のインスタンスを method で使えるようにする
+        # インスタンスを method で使えるようにする
         self.registration = Registration.objects.get(id=self.kwargs['pk'])
         self.window = Window.objects.get(id=self.kwargs['window_pk'])
 

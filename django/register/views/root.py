@@ -108,7 +108,6 @@ class CreateView(mixins.RedirectIfNotIdentified, generic.FormView):
             'register/mail/waiting.html',
             {'registration': registration}
         )
-
         # メール送信
         send_mail_async(
             'PENGUIN ユーザー登録はまだ完了していません',

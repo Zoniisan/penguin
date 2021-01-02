@@ -112,9 +112,10 @@ class Registration(models.Model):
 
         通常は引数なしで呼び出すこと
         """
-        # 同一企画種別の登録件数を取得
+        # 同一企画種別の登録件数（登録コードあり）を取得
         try_number = retry_number if retry_number else\
-            Registration.objects.filter(kind=self.kind).count()
+            Registration.objects.filter(
+                kind=self.kind, verbose_id__isnull=False).count()
 
         try:
             self.verbose_id \
