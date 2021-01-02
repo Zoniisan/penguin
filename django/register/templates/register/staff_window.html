@@ -52,7 +52,19 @@
         <h3>保留中の企画</h3>
     </div>
     <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>整理番号</th>
+                    <th>企画</th>
+                    <th>呼出</th>
+                </tr>
+            </thead>
+            <tbody id="pending">
+            </tbody>
+        </table>
     </div>
+</div>
 </div>
 <!-- 企画種別ごとの飲食物提供情報 -->
 {{ food_list|json_script:"food-data" }}
@@ -160,6 +172,7 @@
     registrationSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         document.querySelector('#waiting').innerHTML = '';
+        document.querySelector('#pending').innerHTML = '';
 
         // 待機
         for (let obj of data["waiting"]) {
@@ -169,6 +182,15 @@
                     "id"],
             );
         }
+
+        // 保留
+        for (let obj of data["pending"]) {
+            document.querySelector('#pending').innerHTML += $.format(
+                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-success">呼出</a></td></tr>',
+                obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
+                    "id"],
+            );
+        }
     };
-</script>+ +
+</script>
 {% endblock %}

@@ -112,6 +112,7 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
     template_name = 'register/staff_window_update.html'
     model = Registration
     form_class = RegistrationForm
+    success_url = reverse_lazy('register:staff_window_open')
 
     def get(self, request, **kwargs):
         # 担当スタッフ以外の閲覧を阻止
@@ -131,6 +132,23 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
             'food': kind.food
         } for kind in Kind.objects.all()]
         return context
+
+    def form_valid(self, form):
+        # 先回りで保存
+        self.object = form.save()
+
+        # 状態更新
+        if 'btn_refuse' in form.data:
+            self.object.refuse(self.request.user)
+            messages.error(self.request, '却下しました！')
+        elif 'btn_suspend' in form.data:
+            messages.info(self.request, '保留しました！')
+            self.object.suspend()
+        elif 'btn_accept' in form.data:
+            messages.success(self.request, '受理しました！')
+            self.object.accept(self.request.user)
+
+        return super().form_valid(form)
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)

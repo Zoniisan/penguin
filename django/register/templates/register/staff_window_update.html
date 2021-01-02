@@ -39,12 +39,12 @@
                 <div class="card-footer pb-0">
                     <div class="row">
                         <div class="col">
-                            <button type="submit" class="btn btn-danger mb-0">却下</button>
-                            <button type="submit" class="btn btn-secondary mb-0">保留</button>
+                            <button type="submit" name="btn_refuse" class="btn btn-danger mb-0">却下</button>
+                            <button type="submit" name="btn_suspend" class="btn btn-secondary mb-0">保留</button>
                         </div>
                         <div class="col text-right">
                             {% buttons %}
-                            <button type="submit" class="btn btn-success mb-0">受理</button>
+                            <button type="submit" name="btn_accept" class="btn btn-success mb-0">受理</button>
                             {% endbuttons %}
                         </div>
                     </div>
@@ -54,6 +54,8 @@
     </div>
 </div>
 {{ food_list|json_script:"food-data" }}
+<!-- 窓口情報 -->
+{{ window_id|json_script:"window-data" }}
 {% endblock contents %}
 
 {% block extrajs %}
@@ -65,10 +67,13 @@
         '/ws/register/registration/'
     );
 
+    var windowData = JSON.parse(document.getElementById('window-data').textContent);
+
     // 更新要求（300ms待機後）
     setTimeout(function () {
         registrationSocket.send(JSON.stringify({
             'update': true,
+            'call_window': windowData['window-id']
         }))
     }, 300);
 

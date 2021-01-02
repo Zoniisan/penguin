@@ -40,7 +40,7 @@ class Registration(models.Model):
 
         with transaction.atomic():
             # 状態更新
-            self.status = ' pending'
+            self.status = 'pending'
             self.save()
             # 窓口に紐付けられている企画を解除
             window.registration = None

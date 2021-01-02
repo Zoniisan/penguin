@@ -107,7 +107,8 @@ class RegistrationConsumer(WebsocketConsumer):
             self.group_name,
             {
                 'type': 'send_registration',
-                'window-id': text_data_json.get('window-id')
+                'window-id': text_data_json.get('window-id'),
+                'call_window': text_data_json.get('call_window')
             }
         )
 
@@ -115,11 +116,14 @@ class RegistrationConsumer(WebsocketConsumer):
         # 待機中の登録企画リスト
         waiting_list = Registration.objects.filter(
             status='waiting').order_by('call_id')
+        pending_list = Registration.objects.filter(
+            status='pending').order_by('call_id')
 
         # 窓口 ID 指定→担当する企画種別のみに絞り込む
         if event.get('window-id'):
             window = Window.objects.get(id=uuid.UUID(event['window-id']))
             waiting_list = waiting_list.filter(kind__in=window.kind_list.all())
+            pending_list = pending_list.filter(kind__in=window.kind_list.all())
 
         # JSON 形式で登録企画に関する情報を通知
         self.send(text_data=json.dumps({
@@ -130,8 +134,17 @@ class RegistrationConsumer(WebsocketConsumer):
                 'str': str(registration),
                 'temp_leader': str(registration.temp_leader)
             } for registration in waiting_list],
+            'pending': [{
+                'id': str(registration.id),
+                'call_id': registration.call_id,
+                'kind': str(registration.kind),
+                'str': str(registration),
+                'temp_leader': str(registration.temp_leader)
+            } for registration in pending_list],
             'called': [{
                 'window-name': window.name,
+                'window-id': str(window.id),
                 'registration-call-id': window.registration.call_id if window.registration else '---'
-            } for window in Window.objects.all().order_by('name')]
+            } for window in Window.objects.all().order_by('name')],
+            'call_window': event['call_window']
         }))

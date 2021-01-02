@@ -30,7 +30,7 @@ active
                 </table>
             </div>
             <div class="card-footer">
-                保留中：11
+                保留中：<span id="pending"></span>
             </div>
         </div>
     </div>
@@ -150,11 +150,21 @@ active
         const data = JSON.parse(e.data);
         document.querySelector('#called-window-name').innerHTML = '';
         document.querySelector('#called-registration-call-id').innerHTML = '';
+        document.querySelector('#pending').innerHTML = '';
 
         // 呼出中
         for (let obj of data["called"]) {
             document.querySelector('#called-window-name').innerHTML += '<th>' + obj["window-name"] + '</th>';
-            document.querySelector('#called-registration-call-id').innerHTML += '<td>' + obj["registration-call-id"] + '</td>';
+            document.querySelector('#called-registration-call-id').innerHTML += '<td id="window_' + obj["window-id"] + '">' + obj["registration-call-id"] + '</td>';
+            if (data["call_window"] == obj["window-id"]) {
+                $('#window_' + obj["window-id"]).effect('pulsate', '', 1000);
+                $('#window_' + obj["window-id"]).addClass('table-warning');
+            }
+        }
+
+        // 保留
+        for (let obj of data["pending"]) {
+            document.querySelector('#pending').innerHTML += '<th>' + obj["call_id"] + ' </th>';
         }
     };
 </script>
