@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+{{ object }}
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active">{{ object }}</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ object }}</h3>
+                </div>
+                <div class="card-body">
+                    <p>仮企画責任者</p>
+                    <p>{{ object.temp_leader }} {{ object.temp_leader.stid }}</p>
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_field form.kind %}
+                    <div class="alert alert-primary" id="alert-food" role="alert"></div>
+                    {% bootstrap_field form.food %}
+                    {% bootstrap_field form.group %}
+                    {% bootstrap_field form.group_kana %}
+                    {% bootstrap_field form.note %}
+                </div>
+                <div class="card-footer pb-0">
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-danger mb-0">却下</button>
+                            <button type="submit" class="btn btn-secondary mb-0">保留</button>
+                        </div>
+                        <div class="col text-right">
+                            {% buttons %}
+                            <button type="submit" class="btn btn-success mb-0">受理</button>
+                            {% endbuttons %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{{ food_list|json_script:"food-data" }}
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+<script>
+    const registrationSocket = new WebSocket(
+        'ws://' +
+        window.location.host +
+        '/ws/register/registration/'
+    );
+
+    // 更新要求（300ms待機後）
+    setTimeout(function () {
+        registrationSocket.send(JSON.stringify({
+            'update': true,
+        }))
+    }, 300);
+
+    // 企画種別ごとの飲食物提供情報
+    var foodData = JSON.parse(document.getElementById('food-data').textContent);
+
+    $(function () {
+        // 企画種別を変更するごとに発動
+        $('#id_kind').on('change', function () {
+            // 選択した 企画種別の ID
+            var kind_id = $(this).val();
+            // 飲食物提供情報を取得
+            if (kind_id) {
+                var food = foodData.find(element => element.kind_id == kind_id).food;
+            }
+            switch (food) {
+                case 'true':
+                    // 飲食物提供必須
+                    $("#id_food").prop({
+                        "checked": true,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('この企画種別は飲食物提供<strong>必須</strong>です！')
+                    break;
+                case 'false':
+                    // 飲食物提供禁止
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('この企画種別は飲食物提供<strong>禁止</strong>です！')
+                    break;
+                case 'select':
+                    // 飲食物提供選択可能
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": false
+                    });
+                    $("#alert-food").html('この企画種別は飲食物を提供するかどうかを選択できます。')
+                    break;
+                default:
+                    // 企画種別未選択
+                    $("#id_food").prop({
+                        "checked": false,
+                        "disabled": true
+                    });
+                    $("#alert-food").html('企画種別を選択してください。')
+            }
+        }).change();
+    });
+</script>
+{% endblock %}

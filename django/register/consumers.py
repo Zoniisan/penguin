@@ -1,5 +1,6 @@
 import base64
 import json
+import uuid
 from io import BytesIO
 
 import qrcode
@@ -99,26 +100,38 @@ class RegistrationConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+
         # 企画登録状況を更新
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {
                 'type': 'send_registration',
+                'window-id': text_data_json.get('window-id')
             }
         )
 
     def send_registration(self, event):
+        # 待機中の登録企画リスト
+        waiting_list = Registration.objects.filter(
+            status='waiting').order_by('call_id')
+
+        # 窓口 ID 指定→担当する企画種別のみに絞り込む
+        if event.get('window-id'):
+            window = Window.objects.get(id=uuid.UUID(event['window-id']))
+            waiting_list = waiting_list.filter(kind__in=window.kind_list.all())
+
         # JSON 形式で登録企画に関する情報を通知
         self.send(text_data=json.dumps({
             'waiting': [{
+                'id': str(registration.id),
                 'call_id': registration.call_id,
                 'kind': str(registration.kind),
-                'str': str(registration)
-            } for registration in
-                Registration.objects.filter(status='waiting')
-                .order_by('call_id')
-            ],
+                'str': str(registration),
+                'temp_leader': str(registration.temp_leader)
+            } for registration in waiting_list],
             'called': [{
-                'window-name': window.name
+                'window-name': window.name,
+                'registration-call-id': window.registration.call_id if window.registration else '---'
             } for window in Window.objects.all().order_by('name')]
         }))

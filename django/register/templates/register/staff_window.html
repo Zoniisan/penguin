@@ -25,70 +25,74 @@
 
 {% block contents %}
 
-<div class="row">
-    <div class="col-8">
-        <div class="alert alert-info" role="alert">
-            <strong>窓口名</strong>&nbsp;{{ window.name }}
-            <strong>担当企画種別</strong>&nbsp;{% for kind in window.kind_list.all %}{% if not forloop.first %},&nbsp;{% endif %}{{ kind }}{% endfor %}
-        </div>
-        <form method="post">
-            <div class="card">
-                <div class="card-header">
-                    <h3>企画登録</h3>
-                </div>
-                {% if form %}
-                <div class="card-body">
-                    {% csrf_token %}
-                    {% bootstrap_form_errors form %}
-                    {% bootstrap_form form %}
-                </div>
-                <div class="card-footer pb-0 text-right">
-                    {% buttons %}
-                    <button type="submit" class="btn btn-success mb-0">登録</button>
-                    {% endbuttons %}
-                </div>
-                {% else %}
-                <div class="card-body">
-                    <p>右から登録する企画を選択してください。</p>
-                </div>
-                {% endif %}
-            </div>
-        </form>
+<div class="alert alert-info" role="alert">
+    <strong>窓口名</strong>&nbsp;{{ window.name }}
+    <strong>担当企画種別</strong>&nbsp;{% for kind in window.kind_list.all %}{% if not forloop.first %},&nbsp;{% endif %}{{ kind }}{% endfor %}
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3>待機中の企画</h3>
     </div>
-    <div class="col-4">
-        <div class="card">
-            <div class="card-header">
-                <h3>待機中の企画</h3>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>整理番号</th>
-                            <th>企画種別<br>企画</th>
-                        </tr>
-                    </thead>
-                    <tbody id="waiting">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <h3>保留中の企画</h3>
-            </div>
-            <div class="card-body">
-            </div>
-        </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>整理番号</th>
+                    <th>企画</th>
+                    <th>呼出</th>
+                </tr>
+            </thead>
+            <tbody id="waiting">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3>保留中の企画</h3>
+    </div>
+    <div class="card-body">
     </div>
 </div>
 <!-- 企画種別ごとの飲食物提供情報 -->
 {{ food_list|json_script:"food-data" }}
+<!-- 窓口情報 -->
+{{ window_id|json_script:"window-data" }}
 {% endblock contents %}
 
 {% block extrajs %}
 {{ form.media.js }}
 <script>
+    $.format = function (format) {
+        var i = 0,
+            j = 0,
+            r = "",
+            next = function (args) {
+                j += 1;
+                i += 1;
+                return args[j] !== void 0 ? args[j] : "";
+            };
+
+        for (i = 0; i < format.length; i++) {
+            if (format.charCodeAt(i) === 37) {
+                switch (format.charCodeAt(i + 1)) {
+                    case 115:
+                        r += next(arguments);
+                        break;
+                    case 100:
+                        r += Number(next(arguments));
+                        break;
+                    default:
+                        r += format[i];
+                        break;
+                }
+            } else {
+                r += format[i];
+            }
+        }
+        return r;
+    };
+
     // 企画種別ごとの飲食物提供情報
     var foodData = JSON.parse(document.getElementById('food-data').textContent);
 
@@ -143,10 +147,13 @@
         '/ws/register/registration/'
     );
 
+    var windowData = JSON.parse(document.getElementById('window-data').textContent);
+
     // 更新要求（300ms待機後）
     setTimeout(function () {
         registrationSocket.send(JSON.stringify({
-            'update': true
+            'update': true,
+            'window-id': windowData['window-id']
         }))
     }, 300);
 
@@ -156,8 +163,12 @@
 
         // 待機
         for (let obj of data["waiting"]) {
-            document.querySelector('#waiting').innerHTML += '<tr><td class="h1">' + obj["call_id"] + '</td><td>' + obj["kind"] + '<br>' + obj["str"] + '</td></tr>';
+            document.querySelector('#waiting').innerHTML += $.format(
+                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-success">呼出</a></td></tr>',
+                obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
+                    "id"],
+            );
         }
     };
-</script>
+</script>+ +
 {% endblock %}

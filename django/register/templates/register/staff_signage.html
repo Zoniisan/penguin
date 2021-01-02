@@ -26,6 +26,7 @@ active
             <div class="card-body">
                 <table class="table">
                     <thead><tr id="called-window-name"></tr></thead>
+                    <tbody><tr class="display-3" id="called-registration-call-id"></tr></thead>
                 </table>
             </div>
             <div class="card-footer">
@@ -148,10 +149,12 @@ active
     registrationSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         document.querySelector('#called-window-name').innerHTML = '';
+        document.querySelector('#called-registration-call-id').innerHTML = '';
 
         // 呼出中
         for (let obj of data["called"]) {
             document.querySelector('#called-window-name').innerHTML += '<th>' + obj["window-name"] + '</th>';
+            document.querySelector('#called-registration-call-id').innerHTML += '<td>' + obj["registration-call-id"] + '</td>';
         }
     };
 </script>

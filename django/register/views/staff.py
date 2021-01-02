@@ -4,8 +4,9 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from penguin import mixins
+from project.models import Kind
 from register.forms import RegistrationForm, WindowForm
-from register.models import Window
+from register.models import Registration, Window
 
 
 class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
@@ -30,6 +31,24 @@ class WindowOpenView(mixins.StaffOnlyMixin, generic.CreateView):
     template_name = 'register/staff_window_open.html'
     model = Window
     form_class = WindowForm
+
+    def get(self, request, **kwargs):
+        # すでに窓口を開けていた場合は、その窓口ページに遷移
+        if Window.objects.filter(staff=request.user):
+            window = Window.objects.get(staff=request.user)
+            if window.registration:
+                # 対応中の企画が存在する場合
+                return redirect(
+                    'register:staff_window_update',
+                    window_pk=str(window.id),
+                    pk=window.registration.id
+                )
+            else:
+                # 対応中の企画が存在しない場合
+                return redirect(
+                    'register:staff_window', window_pk=str(window.id)
+                )
+        return super().get(request, **kwargs)
 
     def form_valid(self, form):
         # 1 ユーザーにつき登録できる窓口は 1 件まで
@@ -63,17 +82,60 @@ class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
         # 担当スタッフ以外の閲覧を阻止
         if request.user != self.window.staff:
             raise HttpResponseForbidden
+        if self.window.registration:
+            # 対応中の企画が存在する場合
+            return redirect(
+                'register:staff_window_update',
+                window_pk=str(self.window.id),
+                pk=self.window.registration.id
+            )
         return super().get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Window のインスタンス
         context['window'] = self.window
+        context['window_id'] = {'window-id': self.window.id}
         return context
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         # Window のインスタンスを method で使えるようにする
+        self.window = Window.objects.get(id=self.kwargs['window_pk'])
+
+
+class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
+    """企画登録会 窓口業務
+
+    登録企画を選択→呼出・保留・受理・却下が可能
+    """
+    template_name = 'register/staff_window_update.html'
+    model = Registration
+    form_class = RegistrationForm
+
+    def get(self, request, **kwargs):
+        # 担当スタッフ以外の閲覧を阻止
+        if request.user != self.window.staff:
+            raise HttpResponseForbidden
+        # ステータス更新
+        self.registration.call(kwargs['window_pk'])
+        return super().get(request, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Window のインスタンス
+        context['window'] = self.window
+        context['window_id'] = {'window-id': self.window.id}
+        context['food_list'] = [{
+            'kind_id': kind.id,
+            'food': kind.food
+        } for kind in Kind.objects.all()]
+        return context
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        # Window のインスタンスを method で使えるようにする
+        self.registration = Registration.objects.get(id=self.kwargs['pk'])
         self.window = Window.objects.get(id=self.kwargs['window_pk'])
 
 

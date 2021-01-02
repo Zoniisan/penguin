@@ -43,6 +43,11 @@ urlpatterns = [
         name='staff_window'
     ),
     path(
+        'staff/window/<slug:window_pk>/<slug:pk>',
+        views.staff.WindowUpdateView.as_view(),
+        name='staff_window_update'
+    ),
+    path(
         'staff/window_close/<slug:pk>',
         views.staff.WindowCloseView.as_view(),
         name='staff_window_close'

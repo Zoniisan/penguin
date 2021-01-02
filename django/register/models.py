@@ -1,7 +1,8 @@
+import datetime
 import uuid
 
 from django.core.validators import RegexValidator
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from home.models import User
 from penguin import validators
 
@@ -13,6 +14,75 @@ class Registration(models.Model):
 
     def __str__(self):
         return '{0}: {1}'.format(self.verbose_id, self.group)
+
+    def call(self, window_id):
+        """状態を「呼出中」にする
+
+        Args:
+            window_id(uuid): 窓口の ID
+        """
+        # 窓口を取得
+        window = Window.objects.get(id=window_id)
+
+        with transaction.atomic():
+            # 状態更新
+            self.status = 'called'
+            self.save()
+            # 窓口に企画を紐付ける
+            window.registration = self
+            window.save()
+
+    def suspend(self):
+        """状態を「保留」にする
+        """
+        # 紐付けられている窓口を取得
+        window = Window.objects.get(registration=self)
+
+        with transaction.atomic():
+            # 状態更新
+            self.status = ' pending'
+            self.save()
+            # 窓口に紐付けられている企画を解除
+            window.registration = None
+            window.save()
+
+    def accept(self, staff):
+        """状態を「受理」にする
+
+        Args:
+            staff(User): 受理スタッフ
+        """
+        # 紐付けられている窓口を取得
+        window = Window.objects.get(registration=self)
+
+        with transaction.atomic():
+            # 状態更新
+            self.status = 'accept'
+            self.finish_staff = staff
+            self.finish_datetime = datetime.datetime.now()
+            self.save()
+            # 窓口に紐付けられている状態を解除
+            window.registration = None
+            window.save()
+
+    def refuse(self, staff):
+        """状態を「却下」にする
+
+        Args:
+            staff(User): 却下スタッフ
+        """
+        # 紐付けられている窓口を取得
+        window = Window.objects.get(registration=self)
+
+        with transaction.atomic():
+            # 状態更新
+            self.status = 'refused'
+            self.finish_staff = staff
+            self.finish_datetime = datetime.datetime.now()
+            self.save()
+            # 窓口に紐付けられている状態を解除
+            window.registration = None
+            window.save()
 
     def set_verbose_id(self, retry_number=None):
         """登録コードを設定
@@ -67,6 +137,13 @@ class Registration(models.Model):
         unique=True,
         help_text='Ex: xA-000',
         null=True
+    )
+
+    temp_leader = models.ForeignKey(
+        'home.User',
+        verbose_name='仮企画責任者',
+        on_delete=models.CASCADE,
+        related_name='registration_temp_leader'
     )
 
     kind = models.ForeignKey(
@@ -129,6 +206,7 @@ class Registration(models.Model):
     finish_staff = models.ForeignKey(
         'home.User',
         verbose_name='対応スタッフ',
+        related_name='registration_finish_staff',
         on_delete=models.SET_NULL,
         null=True, blank=True
     )

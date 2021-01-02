@@ -65,6 +65,8 @@ class CreateView(mixins.RedirectIfNotIdentified, generic.FormView):
             # 企画登録可能ユーザーの場合は、企画登録可能ユーザーの情報を削除
             # （1 回の QR コード読み込みで登録できる企画は高々 1 件）
             VerifiedUser.objects.get(user=self.request.user).delete()
+            # 仮企画責任者
+            form.instance.temp_leader = self.request.user
             # 企画登録情報を保存
             self.object = form.save()
             # 登録コード・整理番号を発行
