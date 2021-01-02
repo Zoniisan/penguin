@@ -7,6 +7,26 @@ from home.models import User
 from penguin import validators
 
 
+class RegistrationManager(models.Manager):
+    def get_call_id_list(self, temp_leader, status):
+        """指定したユーザーが仮企画責任者で、かつ指定した状態の
+        企画登録情報について、整理番号のリストを取得
+
+        Args:
+            temp_leader(User): 仮企画責任者
+            status(str): 状態
+        Returns:
+            list<int>: 整理番号のリスト
+        """
+        if temp_leader.is_authenticated:
+            return Registration.objects.filter(
+                temp_leader=temp_leader, status=status
+            ).order_by('call_id').values_list('call_id', flat=True)
+        else:
+            # そもそも認証されていない場合は空リストを返す
+            return list()
+
+
 class Registration(models.Model):
     class Meta():
         verbose_name = '企画登録'
@@ -115,12 +135,14 @@ class Registration(models.Model):
             Registration.objects.all().count()
 
         try:
-            self.call_id = str(try_number).zfill(3)
+            self.call_id = try_number
             self.save()
         except IntegrityError:
             # すでに同一整理番号のインスタンスが存在する場合
             # 数字を 1 増してリトライ
             self.set_call_id(try_number + 1)
+
+    objects = RegistrationManager()
 
     id = models.UUIDField(
         primary_key=True,

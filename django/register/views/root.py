@@ -4,8 +4,10 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import generic
+from home.tasks import send_mail_async
 from penguin import mixins
 from project.models import Kind
 from register import forms
@@ -79,6 +81,8 @@ class CreateView(mixins.RedirectIfNotIdentified, generic.FormView):
                 self.object = form.save()
             # 整理番号を発行
             self.object.set_call_id()
+            # 整理番号通知メールを送信
+            self.send_mail(self.object)
         else:
             # 企画登録可能ユーザーでない場合→フォーム送信不可
             messages.error(self.request, '不正なページ遷移です！')
@@ -89,6 +93,26 @@ class CreateView(mixins.RedirectIfNotIdentified, generic.FormView):
     def get_success_url(self):
         return reverse_lazy(
             'register:success', kwargs={'pk': self.object.pk}
+        )
+
+    def send_mail(self, registration):
+        """メールを送信する
+
+        Args:
+            registration(Registration): 企画登録
+        Returns:
+            None
+        """
+        # メッセージ本文を作成
+        message = render_to_string(
+            'register/mail/waiting.html',
+            {'registration': registration}
+        )
+
+        # メール送信
+        send_mail_async(
+            'PENGUIN ユーザー登録はまだ完了していません',
+            [{'recipient': registration.temp_leader.email, 'message': message}]
         )
 
 

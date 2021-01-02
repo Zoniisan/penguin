@@ -30,15 +30,12 @@ class IndexView(generic.TemplateView):
             if vote_schedule.get_status() == 'active'
         ]
         # 企画登録整理番号：待機
-        context['waiting_call_id_list'] = Registration.objects.filter(
-            status='waiting', temp_leader=self.request.user
-        ).order_by('call_id').values_list('call_id', flat=True)
+        context['waiting_call_id_list'] = \
+            Registration.objects.get_call_id_list(self.request.user, 'waiting')
         # 企画登録整理番号：対応中
-        context['called_call_id_list'] = Registration.objects.filter(
-            status='called', temp_leader=self.request.user
-        ).order_by('call_id').values_list('call_id', flat=True)
+        context['called_call_id_list'] = \
+            Registration.objects.get_call_id_list(self.request.user, 'called')
         # 企画登録整理番号：保留
-        context['pending_call_id_list'] = Registration.objects.filter(
-            status='pending', temp_leader=self.request.user
-        ).order_by('call_id').values_list('call_id', flat=True)
+        context['pending_call_id_list'] = \
+            Registration.objects.get_call_id_list(self.request.user, 'pending')
         return context
