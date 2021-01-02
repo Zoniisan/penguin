@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% load bootstrap4 %}
 
@@ -35,18 +36,5 @@
 {% endblock contents %}
 
 {% block extrajs %}
-<script>
-    const registrationSocket = new WebSocket(
-        'ws://' +
-        window.location.host +
-        '/ws/register/registration/'
-    );
-
-    // 更新要求（300ms待機後）
-    setTimeout(function () {
-        registrationSocket.send(JSON.stringify({
-            'update': true
-        }))
-    }, 300);
-</script>
+<script src="{% static 'register/root_success.js' %}"></script>
 {% endblock %}

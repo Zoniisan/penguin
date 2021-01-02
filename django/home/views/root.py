@@ -1,5 +1,6 @@
 from django.views import generic
 from home.models import Notice
+from register.models import Registration
 from theme.models import SubmitSchedule, Theme, VoteSchedule
 
 
@@ -28,5 +29,16 @@ class IndexView(generic.TemplateView):
         } for vote_schedule in VoteSchedule.objects.all()
             if vote_schedule.get_status() == 'active'
         ]
-
+        # 企画登録整理番号：待機
+        context['waiting_call_id_list'] = Registration.objects.filter(
+            status='waiting', temp_leader=self.request.user
+        ).order_by('call_id').values_list('call_id', flat=True)
+        # 企画登録整理番号：対応中
+        context['called_call_id_list'] = Registration.objects.filter(
+            status='called', temp_leader=self.request.user
+        ).order_by('call_id').values_list('call_id', flat=True)
+        # 企画登録整理番号：保留
+        context['pending_call_id_list'] = Registration.objects.filter(
+            status='pending', temp_leader=self.request.user
+        ).order_by('call_id').values_list('call_id', flat=True)
         return context

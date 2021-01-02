@@ -15,7 +15,7 @@ from register.models import Registration, VerifyToken, Window
 class TokenConsumer(WebsocketConsumer):
     def connect(self):
         # group に channel を登録
-        self.group_name = 'token-group'
+        self.group_name = 'token_group'
         async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
@@ -76,7 +76,7 @@ class TokenConsumer(WebsocketConsumer):
         img.save(buffered, format="PNG")
         b64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-        # src を返す
+        # base64 形式の qrcode と、その URL を返す
         return 'data:image/png;base64,{0}'.format(b64), url
 
 

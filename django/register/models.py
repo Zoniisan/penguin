@@ -13,15 +13,18 @@ class Registration(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return '{0}: {1}'.format(self.verbose_id, self.group)
+        if self.verbose_id:
+            return '{0}: {1}'.format(self.verbose_id, self.group)
+        else:
+            return self.group
 
     def call(self, window_id):
-        """状態を「呼出中」にする
+        """状態を「対応中」にする
 
         Args:
             window_id(uuid): 窓口の ID
         """
-        # 窓口を取得
+        # ID から窓口を取得
         window = Window.objects.get(id=window_id)
 
         with transaction.atomic():
@@ -35,7 +38,7 @@ class Registration(models.Model):
     def suspend(self):
         """状態を「保留」にする
         """
-        # 紐付けられている窓口を取得
+        # 企画に紐付けられている窓口を取得
         window = Window.objects.get(registration=self)
 
         with transaction.atomic():
@@ -52,7 +55,7 @@ class Registration(models.Model):
         Args:
             staff(User): 受理スタッフ
         """
-        # 紐付けられている窓口を取得
+        # 企画に紐付けられている窓口を取得
         window = Window.objects.get(registration=self)
 
         with transaction.atomic():
@@ -61,7 +64,7 @@ class Registration(models.Model):
             self.finish_staff = staff
             self.finish_datetime = datetime.datetime.now()
             self.save()
-            # 窓口に紐付けられている状態を解除
+            # 窓口に紐付けられている企画を解除
             window.registration = None
             window.save()
 
@@ -71,7 +74,7 @@ class Registration(models.Model):
         Args:
             staff(User): 却下スタッフ
         """
-        # 紐付けられている窓口を取得
+        # 企画に紐付けられている窓口を取得
         window = Window.objects.get(registration=self)
 
         with transaction.atomic():
@@ -282,6 +285,20 @@ class VerifyToken(models.Model):
     )
 
 
+class VerifiedUserManager(models.Manager):
+    def check_user(self, user):
+        """あるユーザーが企画登録可能ユーザーかどうかを確認する
+
+        Args:
+            user(User): ユーザー
+        Returns:
+            bool: 企画登録可能なら True
+        """
+        return user.is_authenticated and (
+            VerifiedUser.objects.filter(user=user).exists()
+        )
+
+
 class VerifiedUser(models.Model):
     class Meta():
         verbose_name = '企画登録可能ユーザー'
@@ -294,6 +311,8 @@ class VerifiedUser(models.Model):
         # すでに同じユーザーの VerifiedUser が存在する場合は削除
         VerifiedUser.objects.filter(user=self.user).delete()
         super().save(**kwargs)
+
+    objects = VerifiedUserManager()
 
     id = models.UUIDField(
         primary_key=True,

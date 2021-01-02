@@ -77,6 +77,34 @@ active
 </div>
 {% endif %}
 
+<!-- Registration Alert -->
+{% if waiting_call_id_list %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-bullhorn"></i>&nbsp;【企画登録会】お呼び出しまでしばらくお待ちください：整理番号{% for call_id in waiting_call_id_list %}{% if not forloop.first %},&nbsp;{% endif %}{{ call_id }}{% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if called_call_id_list %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-bullhorn"></i>&nbsp;【企画登録会】呼出中です！スタッフの指示に従ってください：整理番号{% for call_id in called_call_id_list %}{% if not forloop.first %},&nbsp;{% endif %}{{ call_id }}{% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if pending_call_id_list %}
+<div class="row mb-2">
+    <div class="col">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-bullhorn"></i>&nbsp;【企画登録会】保留中です。スタッフにお問い合わせください：整理番号{% for call_id in pending_call_id_list %}{% if not forloop.first %},&nbsp;{% endif %}{{ call_id }}{% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- Notice -->
 <div class="row">
