@@ -65,7 +65,6 @@
         </table>
     </div>
 </div>
-</div>
 <!-- 企画種別ごとの飲食物提供情報 -->
 {{ food_list|json_script:"food-data" }}
 <!-- 窓口情報 -->
@@ -177,7 +176,7 @@
         // 待機
         for (let obj of data["waiting"]) {
             document.querySelector('#waiting').innerHTML += $.format(
-                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-success">呼出</a></td></tr>',
+                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-primary">呼出</a></td></tr>',
                 obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
                     "id"],
             );
@@ -186,7 +185,7 @@
         // 保留
         for (let obj of data["pending"]) {
             document.querySelector('#pending').innerHTML += $.format(
-                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-success">呼出</a></td></tr>',
+                '<tr><td class="h1">%s</td><td>%s<br>%s<br>%s</td><td><a href="/register/staff/window/%s/%s" class="btn btn-primary">呼出</a></td></tr>',
                 obj["call_id"], obj["kind"], obj["str"], obj["temp_leader"], windowData["window-id"], obj[
                     "id"],
             );

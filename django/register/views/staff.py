@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -9,15 +8,54 @@ from register.forms import RegistrationForm, WindowForm
 from register.models import Registration, Window
 
 
+def get_redirect(staff, origin):
+    """スタッフが担当している窓口の状況に応じ、必要ならリダイレクト
+
+    Args:
+        staff(User): スタッフ
+        origin(str): リダイレクト元の path
+    Returns:
+        HttpRequest: リダイレクト先（必要ないなら None）
+    """
+    # スタッフが担当している窓口があれば取得
+    window = Window.objects.filter(staff=staff).first()
+
+    if window:
+        if window.registration:
+            # 窓口を開設していて、対応中の企画が存在する
+            # →窓口対応画面へ
+            if origin != 'staff_window_update':
+                return redirect(
+                    'register:staff_window_update',
+                    window_pk=window.id,
+                    pk=window.registration.id
+                )
+        else:
+            # 窓口を開設しているが、対応中の企画は存在しない
+            # →窓口待機画面へ
+            if origin != 'staff_window':
+                return redirect(
+                    'register:staff_window',
+                    window_pk=window.id
+                )
+    else:
+        # 窓口を開設していない
+        # →窓口開設画面へ
+        if origin != 'staff_window_open':
+            return redirect('register:staff_window_open')
+
+
 class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
     """機能一覧
+
+    スタッフが行う企画登録業務の一覧を表示
     """
     template_name = 'register/staff_menu.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # ログインしているユーザーが担当している Window のインスタンスが存在
-        # →窓口業務画面に遷移
+        # →機能一覧画面に窓口名を表示
         if Window.objects.filter(staff=self.request.user).exists():
             context['window'] = Window.objects.get(staff=self.request.user)
         return context
@@ -33,36 +71,13 @@ class WindowOpenView(mixins.StaffOnlyMixin, generic.CreateView):
     form_class = WindowForm
 
     def get(self, request, **kwargs):
-        # すでに窓口を開けていた場合は、その窓口ページに遷移
-        if Window.objects.filter(staff=request.user):
-            window = Window.objects.get(staff=request.user)
-            if window.registration:
-                # 対応中の企画が存在する場合
-                return redirect(
-                    'register:staff_window_update',
-                    window_pk=str(window.id),
-                    pk=window.registration.id
-                )
-            else:
-                # 対応中の企画が存在しない場合
-                return redirect(
-                    'register:staff_window', window_pk=str(window.id)
-                )
-        return super().get(request, **kwargs)
+        # スタッフが担当している窓口の状況に応じ、必要ならリダイレクト
+        redirect = get_redirect(request.user, 'staff_window_open')
+        return redirect if redirect else super().get(request, **kwargs)
 
     def form_valid(self, form):
-        # 1 ユーザーにつき登録できる窓口は 1 件まで
-        if Window.objects.filter(staff=self.request.user).exists():
-            messages.error(
-                self.request,
-                '1 スタッフが担当できる窓口は 1 件までです！'
-                '既に開いている窓口業務画面を閉じてください。'
-            )
-            return redirect('register:staff_window_open')
-
         # 担当 staff 登録
         form.instance.staff = self.request.user
-
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -79,17 +94,9 @@ class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
     template_name = 'register/staff_window.html'
 
     def get(self, request, **kwargs):
-        # 担当スタッフ以外の閲覧を阻止
-        if request.user != self.window.staff:
-            raise HttpResponseForbidden
-        if self.window.registration:
-            # 対応中の企画が存在する場合
-            return redirect(
-                'register:staff_window_update',
-                window_pk=str(self.window.id),
-                pk=self.window.registration.id
-            )
-        return super().get(request, **kwargs)
+        # スタッフが担当している窓口の状況に応じ、必要ならリダイレクト
+        redirect = get_redirect(request.user, 'staff_window')
+        return redirect if redirect else super().get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,12 +122,12 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
     success_url = reverse_lazy('register:staff_window_open')
 
     def get(self, request, **kwargs):
-        # 担当スタッフ以外の閲覧を阻止
-        if request.user != self.window.staff:
-            raise HttpResponseForbidden
         # ステータス更新
         self.registration.call(kwargs['window_pk'])
         return super().get(request, **kwargs)
+        # スタッフが担当している窓口の状況に応じ、必要ならリダイレクト
+        redirect = get_redirect(request.user, 'staff_window_update')
+        return redirect if redirect else super().get(request, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
