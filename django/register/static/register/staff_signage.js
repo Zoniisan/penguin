@@ -72,7 +72,7 @@ $(function () {
                     document.querySelector('#waiting-call-id').innerHTML += $.format(
                         '<td id="call-window-highlight">%s</td>', obj['call_id']
                     )
-                    $("#call-window-highlight").effect("highlight", 2000).dequeue().effect("pulsate", 2000)
+                    $("#call-window-highlight").effect("highlight", 5000).dequeue().effect("pulsate", 2000)
                     document.querySelector("#chime").play();
                 } else {
                     document.querySelector('#waiting-call-id').innerHTML += $.format(

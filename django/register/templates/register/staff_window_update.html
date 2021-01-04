@@ -7,7 +7,7 @@
 {% endblock headtitle %}
 
 {% block breadcrumb %}
-<span class="breadcrumb-item active">{{ object }}</span>
+<span class="breadcrumb-item active">整理番号{{ object.call_id }} {{ object }}</span>
 {% endblock breadcrumb %}
 
 {% block extracss %}
@@ -21,7 +21,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h3>{{ object }}</h3>
+                    <h3><span class="text-danger">整理番号{{ object.call_id }}</span> {{ object }}</h3>
                 </div>
                 <div class="card-body">
                     <p>仮企画責任者</p>
