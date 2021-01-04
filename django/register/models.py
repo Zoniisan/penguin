@@ -84,6 +84,8 @@ class Registration(models.Model):
             self.finish_staff = staff
             self.finish_datetime = datetime.datetime.now()
             self.save()
+            # 登録コード付与
+            self.set_verbose_id()
             # 窓口に紐付けられている企画を解除
             window.registration = None
             window.save()

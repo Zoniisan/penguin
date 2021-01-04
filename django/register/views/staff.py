@@ -146,7 +146,6 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
     def form_valid(self, form):
         # 先回りで保存して登録コードを付与
         self.object = form.save()
-        self.object.set_verbose_id()
 
         # 押されたボタンに応じ、該当企画の状態を更新
         if 'btn_refuse' in form.data:

@@ -8,7 +8,7 @@ $(function () {
 
     // 企画登録 QR コードの更新をリクエスト
     setTimeout(function () {
-        tokenSocket.send({})
+        tokenSocket.send(JSON.stringify({}))
     }, 300);
 
     // 企画登録ページにリダイレクト

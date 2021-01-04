@@ -83,7 +83,7 @@ class TokenConsumer(WebsocketConsumer):
 class RegistrationConsumer(WebsocketConsumer):
     def connect(self):
         # group に channel を登録
-        self.group_name = 'registration-group'
+        self.group_name = 'registration_group'
         async_to_sync(self.channel_layer.group_add)(
             self.group_name,
             self.channel_name
@@ -100,33 +100,25 @@ class RegistrationConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-
         # 企画登録状況を更新
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {
                 'type': 'send_registration',
-                'window_id': text_data_json.get('window_id'),
-                'call_window': text_data_json.get('call_window')
             }
         )
 
     def send_registration(self, event):
-        # 待機中の登録企画リスト
+        # 待機企画登録リスト
         waiting_list = Registration.objects.filter(
             status='waiting').order_by('call_id')
+        # 保留企画登録リスト
         pending_list = Registration.objects.filter(
             status='pending').order_by('call_id')
 
-        # 窓口 ID 指定→担当する企画種別のみに絞り込む
-        if event.get('window_id'):
-            window = Window.objects.get(id=uuid.UUID(event['window_id']))
-            waiting_list = waiting_list.filter(kind__in=window.kind_list.all())
-            pending_list = pending_list.filter(kind__in=window.kind_list.all())
-
         # JSON 形式で登録企画に関する情報を通知
         self.send(text_data=json.dumps({
+            # 待機企画リスト
             'waiting': [{
                 'id': str(registration.id),
                 'call_id': registration.call_id,
@@ -134,6 +126,7 @@ class RegistrationConsumer(WebsocketConsumer):
                 'str': str(registration),
                 'temp_leader': str(registration.temp_leader)
             } for registration in waiting_list],
+            # 保留企画リスト
             'pending': [{
                 'id': str(registration.id),
                 'call_id': registration.call_id,
@@ -141,10 +134,11 @@ class RegistrationConsumer(WebsocketConsumer):
                 'str': str(registration),
                 'temp_leader': str(registration.temp_leader)
             } for registration in pending_list],
-            'called': [{
-                'window-name': window.name,
-                'window_id': str(window.id),
-                'registration-call-id': window.registration.call_id if window.registration else '---'
+            # 開設している窓口リスト
+            'windows': [{
+                'id': str(window.id),
+                'name': window.name,
+                'call_id': window.registration.call_id if\
+                window.registration else '---'
             } for window in Window.objects.all().order_by('name')],
-            'call_window': event['call_window']
         }))
