@@ -105,8 +105,11 @@ class WindowView(mixins.StaffOnlyMixin, generic.TemplateView):
         window = Window.objects.get(id=self.kwargs['window_pk'])
         # template 描画用
         context['window'] = window
-        # websocket 送信用（表示される企画の絞り込みに利用）
-        context['window_id'] = {'window_id': window.id}
+        # 窓口の情報
+        context['window_data'] = {
+            'id': window.id,
+            'kind_id_list': [str(kind.id) for kind in window.kind_list.all()],
+        }
 
         return context
 
@@ -134,7 +137,7 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
         # Window のインスタンス（template 描画用）
         context['window'] = self.window
         # Window のインスタンス（websocket 送信用）
-        context['window_id'] = {'window_id': self.window.id}
+        context['window_data'] = {'id': self.window.id}
         # 企画種別ごとの飲食物提供情報を取得
         context['food_list'] = [{
             'kind_id': kind.id,

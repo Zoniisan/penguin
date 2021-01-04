@@ -58,6 +58,9 @@ $(function () {
         registrationSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
 
+            // （あれば）直前に呼出操作を行った企画
+            var callWindowId = data['call_window_id']
+
             // 対応中企画
             document.querySelector('#window-name').innerHTML = '';
             document.querySelector('#waiting-call-id').innerHTML = '';
@@ -65,9 +68,17 @@ $(function () {
                 document.querySelector('#window-name').innerHTML += $.format(
                     '<th>%s</th>', obj['name']
                 )
-                document.querySelector('#waiting-call-id').innerHTML += $.format(
-                    '<td>%s</td>', obj['call_id']
-                )
+                if (obj['id'] == callWindowId) {
+                    document.querySelector('#waiting-call-id').innerHTML += $.format(
+                        '<td id="call-window-highlight">%s</td>', obj['call_id']
+                    )
+                    $("#call-window-highlight").effect("highlight", 2000).dequeue().effect("pulsate", 2000)
+                    document.querySelector("#chime").play();
+                } else {
+                    document.querySelector('#waiting-call-id').innerHTML += $.format(
+                        '<td>%s</td>', obj['call_id']
+                    )
+                }
             }
 
             // 保留企画

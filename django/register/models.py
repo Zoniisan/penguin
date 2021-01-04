@@ -277,7 +277,7 @@ class Window(models.Model):
         on_delete=models.CASCADE
     )
 
-    registration = models.ForeignKey(
+    registration = models.OneToOneField(
         'register.Registration',
         verbose_name='企画登録',
         on_delete=models.SET_NULL,

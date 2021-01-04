@@ -5,6 +5,10 @@ $(function () {
     registration_socket();
 
     function registration_socket() {
+        // 窓口情報を取得
+        var windowData = JSON.parse(document.getElementById("window-data").textContent);
+        var windowId = windowData["id"];
+
         // ソケット作成
         const registrationSocket = new WebSocket(
             'ws://' +
@@ -12,9 +16,11 @@ $(function () {
             '/ws/register/registration/'
         );
 
-        // 対応中の企画情報を更新
+        // 呼出操作を行った窓口の ID を渡す
         setTimeout(function () {
-            registrationSocket.send(JSON.stringify({}))
+            registrationSocket.send(JSON.stringify({
+                'call_window_id': windowId
+            }))
         }, 300);
     }
 });

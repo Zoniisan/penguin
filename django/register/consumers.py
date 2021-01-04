@@ -1,6 +1,5 @@
 import base64
 import json
-import uuid
 from io import BytesIO
 
 import qrcode
@@ -100,11 +99,16 @@ class RegistrationConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
+        # 直前に呼出操作を行った窓口があれば、その ID を取得
+        text_data_json = json.loads(text_data)
+        call_window_id = text_data_json.get('call_window_id')
+
         # 企画登録状況を更新
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {
                 'type': 'send_registration',
+                'call_window_id': call_window_id
             }
         )
 
@@ -123,6 +127,7 @@ class RegistrationConsumer(WebsocketConsumer):
                 'id': str(registration.id),
                 'call_id': registration.call_id,
                 'kind': str(registration.kind),
+                'kind_id': str(registration.kind.id),
                 'str': str(registration),
                 'temp_leader': str(registration.temp_leader)
             } for registration in waiting_list],
@@ -131,6 +136,7 @@ class RegistrationConsumer(WebsocketConsumer):
                 'id': str(registration.id),
                 'call_id': registration.call_id,
                 'kind': str(registration.kind),
+                'kind_id': str(registration.kind.id),
                 'str': str(registration),
                 'temp_leader': str(registration.temp_leader)
             } for registration in pending_list],
@@ -141,4 +147,6 @@ class RegistrationConsumer(WebsocketConsumer):
                 'call_id': window.registration.call_id if\
                 window.registration else '---'
             } for window in Window.objects.all().order_by('name')],
+            # 直前に呼出操作を行った窓口の ID があれば渡す
+            'call_window_id': event['call_window_id']
         }))

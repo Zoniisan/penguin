@@ -64,8 +64,8 @@
         </table>
     </div>
 </div>
-<!-- 窓口情報 -->
-{{ window_id|json_script:"window-data" }}
+<!-- 窓口が担当する企画種別の id のリスト -->
+{{ window_data|json_script:"window-data" }}
 {% endblock contents %}
 
 {% block extrajs %}
