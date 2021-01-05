@@ -1,4 +1,7 @@
 from django import forms
+from home.forms import UserMultipleWidget
+from home.models import User
+
 from register import models
 
 
@@ -19,3 +22,12 @@ class WindowForm(forms.ModelForm):
         widgets = {
             'kind_list': forms.CheckboxSelectMultiple
         }
+
+
+class RegistrationStaffForm(forms.Form):
+    staff_list = forms.ModelMultipleChoiceField(
+        label='企画登録管理スタッフ',
+        queryset=User.objects.staff_list(),
+        widget=UserMultipleWidget,
+        required=False
+    )

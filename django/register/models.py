@@ -389,7 +389,7 @@ class RegisterStaffManager(models.Manager):
         Returns:
             queryset<User>: 統一テーマ管理スタッフのクエリセット
         """
-        return User.objects.filter(themestaff__isnull=False)
+        return User.objects.filter(registerstaff__isnull=False)
 
 
 class RegisterStaff(models.Model):
@@ -412,42 +412,4 @@ class RegisterStaff(models.Model):
         'home.User',
         verbose_name='ユーザー',
         on_delete=models.CASCADE
-    )
-
-
-class RegisterSlack(models.Model):
-    class Meta:
-        verbose_name = '企画登録slack'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.slack_ch
-
-    def verbose_slack_ch(self):
-        """slack_ch を # つきで表示
-
-        Returns:
-            str: #channel
-        """
-        return '#{0}'.format(self.slack_ch)
-
-    def save(self, **kwargs):
-        """このインスタンスはたかだか 1 件のみ存在
-
-        セーブ前に必ず全削除する
-        """
-        # インスタンス全削除
-        RegisterSlack.objects.all().delete()
-        super().save(**kwargs)
-
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
-
-    slack_ch = models.CharField(
-        verbose_name='Slack_ch',
-        max_length=50,
-        help_text='# は除いて登録してください'
     )

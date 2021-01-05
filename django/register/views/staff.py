@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from penguin import mixins
 from project.models import Kind
-from register.forms import RegistrationForm, WindowForm
+from register.forms import RegistrationForm, RegistrationStaffForm, WindowForm
 from register.models import RegisterStaff, Registration, Window
 from register.serializer import RegistrationSerializer
 from rest_framework import permissions, viewsets
@@ -256,3 +257,39 @@ class AdminLiveView(RegisterStaffOnlyMixin, generic.TemplateView):
     """企画登録会 監督業務
     """
     template_name = 'register/staff_admin_live.html'
+
+
+class AdminStaffView(RegisterStaffOnlyMixin, generic.FormView):
+    """統一テーマ案投票担当スタッフ管理
+
+    統一テーマ案投票担当スタッフを選択
+    """
+    template_name = 'register/staff_admin_staff.html'
+    form_class = RegistrationStaffForm
+    success_url = reverse_lazy('register:staff_admin_staff')
+
+    def get_form(self):
+        form = super().get_form()
+
+        # 初期値として現在の統一テーマ案投票担当スタッフをセット
+        form.fields['staff_list'].initial = \
+            RegisterStaff.objects.get_user_list()
+
+        return form
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            # 現在の統一テーマ案投票担当スタッフの権限を
+            # 一時的に全員解除
+            RegisterStaff.objects.all().delete()
+
+            # フォームに入力されたスタッフに対し、
+            # 統一テーマ案投票担当スタッフの権限を付与
+            for user in form.cleaned_data['staff_list']:
+                RegisterStaff.objects.create(user=user)
+
+        messages.success(
+            self.request, '企画登録管理スタッフを登録しました！'
+        )
+
+        return super().form_valid(form)
