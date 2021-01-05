@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headtitle %}
+登録企画一覧
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'register:staff_menu' %}" class="breadcrumb-item">企画登録業務</a>
+<span class="breadcrumb-item active">登録完了企画一覧</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+{% endblock extracss %}
+
+
+{% block contents %}
+<nav class="nav nav-tabs">
+    <a class="nav-link active" href="{% url 'register:staff_admin_list' %}">登録完了企画一覧</a>
+    <a class="nav-link" href="#">企画登録会 監督業務</a>
+    <a class="nav-link" href="#">権限管理</a>
+    <a class="nav-link" href="#">slack ch.</a>
+</nav>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>登録完了企画一覧</h3>
+            </div>
+            <div class="card-body">
+                <p>企画種別で絞り込み</p>
+                <div class="btn-group btn-group-toggle mb-3" role="group" aria-label="Kinds">
+                    <button class="btn btn-primary btn-kind">すべて</button>
+                    {% for kind in kind_list %}
+                    <button class="btn btn-secondary btn-kind" rel="{{ kind.name }}">{{ kind.name }}</button>
+                    {% endfor %}
+                </div>
+                <hr>
+                <div class="table-responsive text-nowrap">
+                    <table id="registration" class="table table-hover table-clickable" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>登録コード</th>
+                                <th>企画種別</th>
+                                <th>団体名</th>
+                                <th>仮企画責任者</th>
+                                <th>登録完了日時</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+<script src="{% static 'register/staff_admin_list.js' %}"></script>
+{% endblock extrajs %}

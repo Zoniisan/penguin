@@ -1,11 +1,14 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from penguin import mixins
 from project.models import Kind
 from register.forms import RegistrationForm, WindowForm
-from register.models import Registration, Window
+from register.models import RegisterStaff, Registration, Window
+from register.serializer import RegistrationSerializer
+from rest_framework import permissions, viewsets
 
 
 def get_redirect(staff, origin):
@@ -190,31 +193,60 @@ class SignageView(mixins.StaffOnlyMixin, generic.TemplateView):
     template_name = 'register/staff_signage.html'
 
 
-class AdminProcessingView(mixins.StaffOnlyMixin, generic.TemplateView):
-    """企画登録会 監督業務
+# これ以降は企画登録管理スタッフ専用ページ
 
-    現在進行中（待機・対応中・保留）の企画登録について表示
+class RegisterStaffOnlyMixin(UserPassesTestMixin):
+    """企画登録管理スタッフ専用
+
+    企画登録管理スタッフ専用ページの View クラスはこれを継承すること
     """
-    template_name = 'register/staff_admin_processing.html'
+    raise_exception = True
+
+    def test_func(self):
+        return RegisterStaff.objects.check_perm(self.request.user)
 
 
-class AdminFinishedView(mixins.StaffOnlyMixin, generic.TemplateView):
-    """企画登録情報管理
+class AdminListView(RegisterStaffOnlyMixin, generic.TemplateView):
+    """登録完了企画一覧
 
-    終了済（受理・却下）の企画登録について表示
+    企画登録（受理）について表示
     """
-    template_name = 'register/staff_admin_finished.html'
+    template_name = 'register/staff_admin_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 企画種別一覧
+        context['kind_list'] = Kind.objects.all()
+
+        return context
 
 
-class AdminStaffView(mixins.StaffOnlyMixin, generic.TemplateView):
-    """企画登録担当スタッフを選択する
+class RegistrationPermission(permissions.BasePermission):
+    """[REST framework] システム管理者専用
 
-    企画登録会 監督業務や企画登録情報管理にアクセスできるスタッフを決定する
+    企画登録管理スタッフ以外アクセスできない ViewSet はこれを利用すること
     """
-    template_name = 'register/staff_admin_staff.html'
+    message = '企画登録管理スタッフ以外アクセスできません。'
+
+    def has_permission(self, request, view):
+        return RegisterStaff.objects.check_perm(request.user)
 
 
-class AdminSlackView(mixins.StaffOnlyMixin, generic.TemplateView):
-    """企画登録 slack ch. を指定する
+class RegistrationViewSet(viewsets.ModelViewSet):
+    """[ViewSet] Registration
+
+    AdminListView で使用
     """
-    template_name = 'register/staff_admin_slack.html'
+    queryset = Registration.objects.filter(status='accepted')
+    serializer_class = RegistrationSerializer
+
+    # 企画登録管理スタッフ以外アクセス禁止
+    permission_classes = (RegistrationPermission,)
+
+
+class AdminDetailView(RegisterStaffOnlyMixin, generic.DetailView):
+    """登録企画情報の詳細を閲覧
+    """
+    template_name = 'register/staff_admin_detail.html'
+    model = Registration

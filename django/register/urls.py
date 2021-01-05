@@ -1,3 +1,4 @@
+
 from django.urls import path
 
 from register import views
@@ -51,5 +52,15 @@ urlpatterns = [
         'staff/window_close/<slug:pk>',
         views.staff.WindowCloseView.as_view(),
         name='staff_window_close'
+    ),
+    path(
+        'staff/admin/list',
+        views.staff.AdminListView.as_view(),
+        name='staff_admin_list'
+    ),
+    path(
+        'staff/admin/detail/<slug:pk>',
+        views.staff.AdminDetailView.as_view(),
+        name='staff_admin_detail'
     ),
 ]

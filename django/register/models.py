@@ -1,6 +1,7 @@
 import datetime
 import uuid
 
+from django.conf import settings
 from django.core.validators import RegexValidator
 from django.db import IntegrityError, models, transaction
 from home.models import User
@@ -49,7 +50,7 @@ class Registration(models.Model):
 
         with transaction.atomic():
             # 状態更新
-            self.status = 'called'
+            self.status = self.StatusChoice.CALLED
             self.save()
             # 窓口に企画を紐付ける
             window.registration = self
@@ -63,7 +64,7 @@ class Registration(models.Model):
 
         with transaction.atomic():
             # 状態更新
-            self.status = 'pending'
+            self.status = self.StatusChoice.PENDING
             self.save()
             # 窓口に紐付けられている企画を解除
             window.registration = None
@@ -80,7 +81,7 @@ class Registration(models.Model):
 
         with transaction.atomic():
             # 状態更新
-            self.status = 'accept'
+            self.status = self.StatusChoice.ACCEPTED
             self.finish_staff = staff
             self.finish_datetime = datetime.datetime.now()
             self.save()
@@ -101,7 +102,7 @@ class Registration(models.Model):
 
         with transaction.atomic():
             # 状態更新
-            self.status = 'refused'
+            self.status = self.StatusChoice.REFUSED
             self.finish_staff = staff
             self.finish_datetime = datetime.datetime.now()
             self.save()
@@ -117,7 +118,7 @@ class Registration(models.Model):
         # 同一企画種別の登録件数（登録コードあり）を取得
         try_number = retry_number if retry_number else\
             Registration.objects.filter(
-                kind=self.kind, verbose_id__isnull=False).count()
+                kind=self.kind, verbose_id__isnull=False).count() + 1
 
         try:
             self.verbose_id \
@@ -144,6 +145,18 @@ class Registration(models.Model):
             # すでに同一整理番号のインスタンスが存在する場合
             # 数字を 1 増してリトライ
             self.set_call_id(try_number + 1)
+
+    def get_leader_url(self):
+        """企画責任者確定 URL を取得
+
+        Returns:
+            str: 企画責任者確定 URL
+        """
+        return '{0}{1}{2}'.format(
+            settings.BASE_URL,
+            'hoge',
+            self.leader_token
+        )
 
     objects = RegistrationManager()
 
@@ -227,7 +240,7 @@ class Registration(models.Model):
     )
 
     finish_datetime = models.DateTimeField(
-        verbose_name='対応終了日時',
+        verbose_name='処理完了日時',
         null=True, blank=True
     )
 

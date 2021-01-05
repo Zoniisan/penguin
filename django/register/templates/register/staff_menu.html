@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block headtitle %}
-企画登録管理
+企画登録業務
 {% endblock headtitle %}
 
 {% block ac_staff %}
@@ -10,7 +10,7 @@ active
 {% block breadcrumb %}
 <a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
 <a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
-<span class="breadcrumb-item active">企画登録管理</span>
+<span class="breadcrumb-item active">企画登録業務</span>
 {% endblock breadcrumb %}
 
 {% block contents %}
@@ -19,7 +19,7 @@ active
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <h3>企画登録管理</h3>
+                <h3>企画登録業務</h3>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-clickable">
@@ -41,10 +41,10 @@ active
                                 <small class="text-muted">企画登録会において、企画登録 QR コードの表示と整理番号の呼び出しを行います。</small>
                             </td>
                         </tr>
-                        <tr data-href="{% url 'home:staff_member' %}">
+                        <tr data-href="{% url 'register:staff_admin_list' %}">
                             <td scope="row">
-                                企画登録会 監督業務・企画登録情報管理&nbsp;<span class="badge badge-pill badge-info">Regulated</span><br>
-                                <small class="text-muted">企画登録会の状況と、登録された企画の情報を表示・編集します。</small>
+                                企画登録管理スタッフ専用ページ&nbsp;<span class="badge badge-pill badge-info">Regulated</span><br>
+                                <small class="text-muted">登録企画の一覧を表示したり、企画登録会の監督業務を行ったりします。</small>
                             </td>
                         </tr>
                     </tbody>

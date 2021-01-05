@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+{{ object }}
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'register:staff_menu' %}" class="breadcrumb-item">企画登録業務</a>
+<a href="{% url 'register:staff_admin_list' %}" class="breadcrumb-item">登録完了企画一覧</a>
+<span class="breadcrumb-item active">{{ object }}</span>
+{% endblock breadcrumb %}
+
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ object }}</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th scope="col">登録コード</th>
+                            <td>{{ object.verbose_id }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">企画種別</th>
+                            <td>{{ object.kind }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">飲食物提供</th>
+                            <td>{{ object.food }}</td>
+                        <tr>
+                        <tr>
+                            <th scope="col">仮企画責任者</th>
+                            <td>{{ object.temp_leader }}</td>
+                        <tr>
+                            <th scope="col">団体名</th>
+                            <td>{{ object.group }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">団体名（かな）</th>
+                            <td>{{ object.group_kana }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">企画概要・備考</th>
+                            <td>{{ object.note|linebreaksbr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">作成日時</th>
+                            <td>{{ object.create_datetime }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">登録完了日時</th>
+                            <td>{{ object.finish_datetime }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">対応スタッフ</th>
+                            <td>{{ object.finish_staff }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="col">責任者確定 URL</th>
+                            <td>{{ object.get_leader_url }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
