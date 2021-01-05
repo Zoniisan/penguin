@@ -70,15 +70,17 @@ $(function () {
                 )
                 if (obj['id'] == callWindowId) {
                     document.querySelector('#waiting-call-id').innerHTML += $.format(
-                        '<td id="call-window-highlight">%s</td>', obj['call_id']
+                        '<td id="call-window-highlight"><span>%s</td>', obj['call_id']
                     )
-                    $("#call-window-highlight").effect("highlight", 5000).dequeue().effect("pulsate", 2000)
-                    document.querySelector("#chime").play();
                 } else {
                     document.querySelector('#waiting-call-id').innerHTML += $.format(
                         '<td>%s</td>', obj['call_id']
                     )
                 }
+            }
+            if (callWindowId) {
+                $("#call-window-highlight").effect("highlight", 5000).dequeue().effect("pulsate", 2000);
+                document.querySelector("#chime").play();
             }
 
             // 保留企画

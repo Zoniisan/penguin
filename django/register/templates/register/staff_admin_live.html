@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headtitle %}
+企画登録会 監督業務
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'register:staff_menu' %}" class="breadcrumb-item">企画登録業務</a>
+<span class="breadcrumb-item active">企画登録会 監督業務</span>
+{% endblock breadcrumb %}
+
+
+{% block contents %}
+<nav class="nav nav-tabs">
+    <a class="nav-link" href="{% url 'register:staff_admin_list' %}">登録完了企画一覧</a>
+    <a class="nav-link active" href="{% url 'register:staff_admin_live' %}">企画登録会 監督業務</a>
+    <a class="nav-link" href="#">権限管理</a>
+    <a class="nav-link" href="#">slack ch.</a>
+</nav>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>企画登録会 監督業務</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    対応中・待機・保留状態の企画をリアルタイムに表示します。
+                </div>
+                <h4>対応中の企画（窓口一覧）</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>窓口名</th>
+                            <th>担当スタッフ</th>
+                            <th>整理番号</th>
+                            <th>企画種別</th>
+                            <th>企画</th>
+                            <th>仮企画責任者</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="windows">
+                    </tbody>
+                </table>
+                <h4>待機状態の企画</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>整理番号</th>
+                            <th>企画種別</th>
+                            <th>企画</th>
+                            <th>仮企画責任者</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waiting">
+                </table>
+                <h4>保留状態の企画</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>整理番号</th>
+                            <th>企画種別</th>
+                            <th>企画</th>
+                            <th>仮企画責任者</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script src="{% static 'register/staff_admin_live.js' %}"></script>
+{% endblock extrajs %}

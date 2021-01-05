@@ -23,7 +23,7 @@ active
 {% block contents %}
 <nav class="nav nav-tabs">
     <a class="nav-link active" href="{% url 'register:staff_admin_list' %}">登録完了企画一覧</a>
-    <a class="nav-link" href="#">企画登録会 監督業務</a>
+    <a class="nav-link" href="{% url 'register:staff_admin_live' %}">企画登録会 監督業務</a>
     <a class="nav-link" href="#">権限管理</a>
     <a class="nav-link" href="#">slack ch.</a>
 </nav>
@@ -34,6 +34,9 @@ active
                 <h3>登録完了企画一覧</h3>
             </div>
             <div class="card-body">
+            <div class="alert alert-info" role="alert">
+                登録完了（受理）した企画の情報を表示します。最新情報の取得には画面更新が必要です。
+            </div>
                 <p>企画種別で絞り込み</p>
                 <div class="btn-group btn-group-toggle mb-3" role="group" aria-label="Kinds">
                     <button class="btn btn-primary btn-kind">すべて</button>

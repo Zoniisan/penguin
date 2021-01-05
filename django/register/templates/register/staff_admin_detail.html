@@ -8,10 +8,6 @@ active
 {% endblock ac_staff %}
 
 {% block breadcrumb %}
-<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
-<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
-<a href="{% url 'register:staff_menu' %}" class="breadcrumb-item">企画登録業務</a>
-<a href="{% url 'register:staff_admin_list' %}" class="breadcrumb-item">登録完了企画一覧</a>
 <span class="breadcrumb-item active">{{ object }}</span>
 {% endblock breadcrumb %}
 
@@ -58,6 +54,11 @@ active
                             <td>{{ object.create_datetime }}</td>
                         </tr>
                         <tr>
+                            <th scope="col">状態</th>
+                            <td>{{ object.get_status_display }}</td>
+                        </tr>
+                        {% if object.status == 'accepted' %}
+                        <tr>
                             <th scope="col">登録完了日時</th>
                             <td>{{ object.finish_datetime }}</td>
                         </tr>
@@ -69,6 +70,7 @@ active
                             <th scope="col">責任者確定 URL</th>
                             <td>{{ object.get_leader_url }}</td>
                         </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

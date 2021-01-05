@@ -144,8 +144,19 @@ class RegistrationConsumer(WebsocketConsumer):
             'windows': [{
                 'id': str(window.id),
                 'name': window.name,
-                'call_id': window.registration.call_id if\
-                window.registration else '---'
+                'call_id': window.registration.call_id\
+                if window.registration else '---',
+                'staff': str(window.staff),
+                'kind': str(window.registration.kind\
+                        if window.registration else '---'),
+                'kind_id': str(window.registration.kind.id\
+                        if window.registration else '---'),
+                'str': str(window.registration\
+                        if window.registration else '---'),
+                'temp_leader': str(window.registration.temp_leader\
+                        if window.registration else '---'),
+                'register_id': str(window.registration.id\
+                        if window.registration else '---')
             } for window in Window.objects.all().order_by('name')],
             # 直前に呼出操作を行った窓口の ID があれば渡す
             'call_window_id': event['call_window_id']

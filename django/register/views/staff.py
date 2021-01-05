@@ -250,3 +250,9 @@ class AdminDetailView(RegisterStaffOnlyMixin, generic.DetailView):
     """
     template_name = 'register/staff_admin_detail.html'
     model = Registration
+
+
+class AdminLiveView(RegisterStaffOnlyMixin, generic.TemplateView):
+    """企画登録会 監督業務
+    """
+    template_name = 'register/staff_admin_live.html'

@@ -63,4 +63,9 @@ urlpatterns = [
         views.staff.AdminDetailView.as_view(),
         name='staff_admin_detail'
     ),
+    path(
+        'staff/admin/live',
+        views.staff.AdminLiveView.as_view(),
+        name='staff_admin_live'
+    ),
 ]
