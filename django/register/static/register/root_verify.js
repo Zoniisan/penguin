@@ -1,7 +1,8 @@
 $(function () {
     // ソケット作成
+    var ws_protocol = get_ws_protocol();
     const tokenSocket = new WebSocket(
-        'ws://' +
+        ws_protocol +
         window.location.host +
         '/ws/register/token/'
     );

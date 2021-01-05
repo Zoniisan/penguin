@@ -5,8 +5,9 @@ $(function () {
     var kindIdList = windowData["kind_id_list"];
 
     // ソケット作成
+    var ws_protocol = get_ws_protocol();
     const registrationSocket = new WebSocket(
-        'ws://' +
+        ws_protocol +
         window.location.host +
         '/ws/register/registration/'
     );

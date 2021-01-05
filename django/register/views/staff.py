@@ -65,6 +65,9 @@ class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
         # →機能一覧画面に窓口名を表示
         if Window.objects.filter(staff=self.request.user).exists():
             context['window'] = Window.objects.get(staff=self.request.user)
+        # 企画登録管理スタッフであれば、専用メニューを表示
+        context['is_register_staff'] = \
+            RegisterStaff.objects.check_perm(self.request.user)
         return context
 
 

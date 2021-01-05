@@ -10,8 +10,9 @@ $(function () {
         var windowId = windowData["id"];
 
         // ソケット作成
-        const registrationSocket = new WebSocket(
-            'ws://' +
+    var ws_protocol = get_ws_protocol();
+    const registrationSocket = new WebSocket(
+            ws_protocol +
             window.location.host +
             '/ws/register/registration/'
         );

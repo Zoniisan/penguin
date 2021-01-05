@@ -31,7 +31,9 @@ active
                     <tbody>
                         <tr data-href="{% url 'register:staff_window_open' %}">
                             <td scope="row">
-                                企画登録会 窓口業務&nbsp;{% if window %}&nbsp;<span class="text-danger">窓口業務中：{{ window.name }}&nbsp;</span>{% endif %}<span class="badge badge-pill badge-warning">Staff</span><br>
+                                企画登録会 窓口業務&nbsp;{% if window %}&nbsp;<span
+                                    class="text-danger">窓口業務中：{{ window.name }}&nbsp;</span>{% endif %}<span
+                                    class="badge badge-pill badge-warning">Staff</span><br>
                                 <small class="text-muted">企画登録会の窓口業務を開始します。</small>
                             </td>
                         </tr>
@@ -41,12 +43,14 @@ active
                                 <small class="text-muted">企画登録会において、企画登録 QR コードの表示と整理番号の呼び出しを行います。</small>
                             </td>
                         </tr>
+                        {% if is_register_staff %}
                         <tr data-href="{% url 'register:staff_admin_list' %}">
                             <td scope="row">
                                 企画登録管理スタッフ専用ページ&nbsp;<span class="badge badge-pill badge-info">Regulated</span><br>
                                 <small class="text-muted">登録企画の一覧を表示したり、企画登録会の監督業務を行ったりします。</small>
                             </td>
                         </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

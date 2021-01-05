@@ -96,3 +96,13 @@ function get_food_status() {
         }
     }).change();
 }
+
+// Websocket のプロトコルを取得
+function get_ws_protocol() {
+    console.log(location.protocol);
+    if (location.protocol == 'https:') {
+        return 'wss://';
+    } else if (location.protocol == 'http:') {
+        return 'ws://';
+    }
+}

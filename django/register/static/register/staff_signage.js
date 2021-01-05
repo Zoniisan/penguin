@@ -17,8 +17,9 @@ $(function () {
     // 企画登録 QR コード部の処理
     function token_socket() {
         // ソケットを作成
+        var ws_protocol = get_ws_protocol();
         const tokenSocket = new WebSocket(
-            'ws://' +
+            ws_protocol +
             window.location.host +
             '/ws/register/token/'
         );
@@ -41,11 +42,11 @@ $(function () {
         };
     }
 
-    // 対応中の整理番号部の処理
     function registration_socket() {
         // ソケット作成
+        var ws_protocol = get_ws_protocol();
         const registrationSocket = new WebSocket(
-            'ws://' +
+            ws_protocol +
             window.location.host +
             '/ws/register/registration/'
         );
