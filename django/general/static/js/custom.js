@@ -81,7 +81,6 @@ function get_food_status() {
             case 'select':
                 // 飲食物提供選択可能
                 $("#id_food").prop({
-                    "checked": false,
                     "disabled": false
                 });
                 $("#alert-food").html('この企画種別は飲食物を提供するかどうかを選択できます。')

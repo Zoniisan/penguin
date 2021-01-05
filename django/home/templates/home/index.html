@@ -219,6 +219,26 @@ active
 {% endfor %}
 {% endif %}
 
+<!-- Registration List -->
+<div class="row">
+{% for registration in registration_list %}
+<div class="col-xl-4">
+<div class="card">
+    <div class="card-header bg-warning">
+        {{ registration.verbose_id }} / 企画責任者未確定
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">{{ registration.group }}</h4>
+        <p class="card-text">企画責任者を確定してください</p>
+    </div>
+    <div class="card-footer text-muted">
+        <a class="btn btn-primary btn-block" href="#" role="button">詳細</a>
+    </div>
+</div>
+</div>
+{% endfor %}
+</div>
+
 {% else %}
 <div class="alert alert-primary" role="alert">
     <a href="{% url 'home:auth_login' %}">ログイン</a>してください。

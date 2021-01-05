@@ -53,7 +53,8 @@ class Kind(OrderedModel):
 
     staff_list = models.ManyToManyField(
         'home.User',
-        verbose_name='担当スタッフ'
+        verbose_name='担当スタッフ',
+        blank=True
     )
 
     slack_ch = models.CharField(

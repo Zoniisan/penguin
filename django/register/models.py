@@ -39,6 +39,13 @@ class Registration(models.Model):
         else:
             return self.group
 
+    def clean(self):
+        # 飲食物提供企画について
+        if self.kind.food == 'true':
+            self.food = True
+        elif self.kind.food == 'false':
+            self.food = False
+
     def call(self, window_id):
         """状態を「対応中」にする
 
