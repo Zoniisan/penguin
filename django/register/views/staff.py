@@ -1,9 +1,12 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import generic
+from home.tasks import send_mail_async
 from penguin import mixins
 from project.models import Kind
 from register.forms import RegistrationForm, RegistrationStaffForm, WindowForm
@@ -163,6 +166,7 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
             self.object.suspend()
         elif 'btn_accept' in form.data:
             messages.success(self.request, '受理しました！')
+            self.send_mail(self.object)
             self.object.accept(self.request.user)
 
         return super().form_valid(form)
@@ -172,6 +176,29 @@ class WindowUpdateView(mixins.StaffOnlyMixin, generic.UpdateView):
         # インスタンスを method で使えるようにする
         self.registration = Registration.objects.get(id=self.kwargs['pk'])
         self.window = Window.objects.get(id=self.kwargs['window_pk'])
+
+    def send_mail(self, registration):
+        """メールを送信する
+
+        Args:
+            registration(Registration): Registration のインスタンス
+        Returns:
+            None
+        """
+        # メッセージ本文を作成
+        message = render_to_string(
+            'register/mail/accept.html',
+            {
+                'registration': registration,
+                'BASE_URL': settings.BASE_URL,
+            }
+        )
+
+        # メール送信
+        send_mail_async(
+            'PENGUIN ユーザー登録はまだ完了していません',
+            [{'recipient': registration.temp_leader.email, 'message': message}]
+        )
 
 
 class WindowCloseView(mixins.StaffOnlyMixin, generic.TemplateView):
