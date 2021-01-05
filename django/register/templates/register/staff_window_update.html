@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block headtitle %}
+{{ object }}
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active">整理番号{{ object.call_id }} {{ object }}</span>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<form method="post">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="text-danger">整理番号{{ object.call_id }}</span> {{ object }}</h3>
+                </div>
+                <div class="card-body">
+                    <p>仮企画責任者</p>
+                    <p>{{ object.temp_leader }} {{ object.temp_leader.stid }}</p>
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_field form.kind %}
+                    <div class="alert alert-primary" id="alert-food" role="alert"></div>
+                    {% bootstrap_field form.food %}
+                    {% bootstrap_field form.group %}
+                    {% bootstrap_field form.group_kana %}
+                    {% bootstrap_field form.note %}
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalRefuse">
+                                却下
+                            </button>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalSuspend">
+                                保留
+                            </button>
+                        </div>
+                        <div class="col text-right">
+                            <button type="button" class="btn btn-success" data-toggle="modal"
+                                data-target="#modalAccept">
+                                受理
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalRefuse" tabindex="-1" role="dialog" aria-labelledby="modalRefuseTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>企画を<strong class="text-danger">却下</strong>しますか？（この操作は取り消せません）</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                    <button type="submit" name="btn_refuse" class="btn btn-danger">却下</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSuspend" tabindex="-1" role="dialog" aria-labelledby="modalSuspendTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>企画を<strong class="text-info">保留</strong>しますか？</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                    <button type="submit" name="btn_suspend" class="btn btn-info">保留</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAccept" tabindex="-1" role="dialog" aria-labelledby="modalAcceptTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>企画を<strong class="text-success">受理</strong>しますか？（この操作は取り消せません）</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">やめる</button>
+                    <button type="submit" name="btn_accept" class="btn btn-success">受理</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 企画種別ごとの飲食物提供情報 -->
+{{ food_list|json_script:"food-data" }}
+<!-- 窓口情報 -->
+{{ window_data|json_script:"window-data" }}
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+<script src="{% static 'register/staff_window_update.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block headtitle %}
+マスターデータ管理
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<span class="breadcrumb-item active">マスターデータ管理</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>マスターデータ管理</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-clickable">
+                    <thead>
+                        <tr>
+                            <th>機能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-href="{% url 'home:department_list' %}">
+                            <td scope="row">
+                                部局担当・システム管理者管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">スタッフが所属する部局担当とシステム管理者を管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'home:contactkind_list' %}">
+                            <td scope="row">
+                                お問い合わせ種別管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">お問い合わせの種別を管理します。</small>
+                            </td>
+                        </tr>
+                        <tr data-href="{% url 'project:kind_list' %}">
+                            <td scope="row">
+                                企画種別管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">出展できる企画の種別を管理します。</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contents %}

@@ -22,6 +22,12 @@ class MenuView(mixins.StaffOnlyMixin, generic.TemplateView):
         return context
 
 
+class MasterDataView(mixins.AdminOnlyMixin, generic.TemplateView):
+    """マスターデータ管理
+    """
+    template_name = 'home/staff_master_data.html'
+
+
 class MemberView(mixins.StaffOnlyMixin, generic.TemplateView):
     """スタッフ一覧
 

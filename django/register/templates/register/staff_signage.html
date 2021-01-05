@@ -1,0 +1,102 @@
+{% extends 'flame.html' %}
+{% load static %}
+{% block headtitle %}
+企画登録業務
+{% endblock headtitle %}
+
+{% block ac_staff %}
+active
+{% endblock ac_staff %}
+
+{% block flame_contents %}
+<div id="test"></div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h3>対応中の整理番号</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead><tr id="window-name"></tr></thead>
+                    <tbody><tr class="display-3" id="waiting-call-id"></tr></thead>
+                </table>
+            </div>
+            <div class="card-footer">
+                保留中：<span id="pending-call-id"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3">
+        <div class="card">
+            <div class="card-header" id="qr-header">
+                <h3>企画登録 QR コード</h3>
+            </div>
+            <div class="card-body text-center">
+                <img id="token-qrcode">
+                <p id="token-url"></p>
+            </div>
+            <div class="card-footer">
+                QR コードを使用すると自動的に更新されます。<br>
+                最終更新：<span id="token-create-datetime"></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-9">
+        <div class="card">
+            <div class="card-header">
+                <h3>企画登録方法</h3>
+            </div>
+            <div class="card-body text-center">
+                <div class="row">
+                    <div class="col">
+                        <i class="fas fa-arrow-left fa-5x mb-4"></i>
+                        <i class="fas fa-qrcode fa-5x mb-4"></i>
+                        <p class="h1">左の企画登録<br>QRコードを読み込む</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-user fa-5x mb-4"></i>
+                        <p class="h1">（未入力の場合）<br>個人情報を入力</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-edit fa-5x mb-4"></i>
+                        <p class="h1">企画情報を入力</p>
+                    </div>
+                    <div class="col-1">
+                        <i class="fas fa-angle-right fa-2x mt-5"></i>
+                    </div>
+                    <div class="col">
+                        <i class="fas fa-bullhorn fa-5x mb-4"></i>
+                        <p class="h1">お呼び出しまで<br>お待ちください</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="btn btn-secondary" href="{% url 'register:staff_menu' %}" role="button">もどる</a>
+        <button type="button" class="btn btn-primary" id="btn-unmute"><i class="fas fa-volume-up"></i>音声ON</button>
+    </div>
+</div>
+
+<!-- 音声ファイル -->
+<audio id="popi" preload>
+    <source src="{% static 'register/popi.mp3' %}" type="audio/mp3">
+</audio>
+<audio id="chime" preload>
+    <source src="{% static 'register/chime.mp3' %}" type="audio/mp3">
+</audio>
+
+{% endblock flame_contents %}
+
+{% block extrajs %}
+<script src="{% static 'register/staff_signage.js' %}"></script>
+{% endblock extrajs %}

@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.urls import include, path
+from register.views.staff import RegistrationViewSet
 from rest_framework import routers
 
 from home import views
@@ -203,6 +204,11 @@ urlpatterns = [
         name='staff_menu'
     ),
     path(
+        'staff/master_data',
+        views.staff.MasterDataView.as_view(),
+        name='staff_master_data'
+    ),
+    path(
         'staff/member',
         views.staff.MemberView.as_view(),
         name='staff_member'
@@ -219,6 +225,7 @@ urlpatterns = [
 # https://pypi.org/project/djangorestframework-datatables/
 router = routers.DefaultRouter()
 router.register('user', views.UserViewSet)
+router.register('registration', RegistrationViewSet)
 
 urlpatterns += [
     url('^api/', include(router.urls)),

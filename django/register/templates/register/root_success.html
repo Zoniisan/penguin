@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load bootstrap4 %}
+
+{% block headtitle %}
+入力完了
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<span class="breadcrumb-item active">企画登録</span>
+<span class="breadcrumb-item active">入力完了</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>入力完了</h3>
+                </div>
+                <div class="card-body">
+                    <p>入力完了しました！呼び出しまでしばらくお待ちください</p>
+                    <div class="jumbotron text-center">
+                        <h1>整理番号</h1>
+                        <hr>
+                        <h1 class="display-3">{{ object.call_id }}</h1>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+<script src="{% static 'register/root_success.js' %}"></script>
+{% endblock %}

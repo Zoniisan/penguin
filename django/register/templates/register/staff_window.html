@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block headtitle %}
+窓口業務
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<div class="container-fluid">
+    <div class="alert alert-danger" role="alert">
+        <div class="row">
+            <div class="col">窓口業務を終了する際は必ず「終了」ボタンを押してください！</div>
+            <div class="col text-right"><a class="btn btn-success"
+                    href="{% url 'register:staff_window_close' window.id %}" role="button">終了</a></div>
+        </div>
+    </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block contents %}
+
+<div class="alert alert-info" role="alert">
+    <strong>窓口名</strong>&nbsp;{{ window.name }}
+    <strong>担当企画種別</strong>&nbsp;{% for kind in window.kind_list.all %}{% if not forloop.first %},&nbsp;{% endif %}{{ kind }}{% endfor %}
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3>待機中の企画</h3>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>整理番号</th>
+                    <th>企画</th>
+                    <th>呼出</th>
+                </tr>
+            </thead>
+            <tbody id="waiting">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3>保留中の企画</h3>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>整理番号</th>
+                    <th>企画</th>
+                    <th>呼出</th>
+                </tr>
+            </thead>
+            <tbody id="pending">
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 窓口が担当する企画種別の id のリスト -->
+{{ window_data|json_script:"window-data" }}
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+<script src="{% static 'register/staff_window.js' %}"></script>
+{% endblock %}

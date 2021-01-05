@@ -60,6 +60,12 @@ active
                                 <small class="text-muted">スタッフからユーザーに送信するメッセージを管理します。</small>
                             </td>
                         </tr>
+                        <tr data-href="{% url 'register:staff_menu' %}">
+                            <td scope="row">
+                                企画登録業務&nbsp;<span class="badge badge-pill badge-warning">Staff</span><br>
+                                <small class="text-muted">企画登録会に使うツールの提供や、企画登録の管理を行います。</small>
+                            </td>
+                        </tr>
                         {% if is_theme_staff %}
                         <tr data-href="{% url 'theme:staff_menu' %}">
                             <td scope="row">
@@ -81,16 +87,10 @@ active
                                 <small class="text-muted">トップページに表示されるお知らせを管理します。</small>
                             </td>
                         </tr>
-                        <tr data-href="{% url 'home:department_list' %}">
+                        <tr data-href="{% url 'home:staff_master_data' %}">
                             <td scope="row">
-                                部局担当・システム管理者管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
-                                <small class="text-muted">スタッフが所属する部局担当とシステム管理者を管理します。</small>
-                            </td>
-                        </tr>
-                        <tr data-href="{% url 'home:contactkind_list' %}">
-                            <td scope="row">
-                                お問い合わせ種別管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
-                                <small class="text-muted">お問い合わせの種別を管理します。</small>
+                                マスターデータ管理&nbsp;<span class="badge badge-pill badge-danger">Admin</span><br>
+                                <small class="text-muted">企画種別の設定など、初期設定を行います。</small>
                             </td>
                         </tr>
                         {% endif %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block extracss %}
+{{ form.media.css }}
+{% endblock extracss %}
+
+{% block headtitle %}
+企画種別作成
+{% endblock headtitle %}
+
+{% block breadcrumb %}
+<a href="{% url 'home:index' %}" class="breadcrumb-item">ホーム</a>
+<a href="{% url 'home:staff_menu' %}" class="breadcrumb-item">スタッフページ</a>
+<a href="{% url 'home:staff_master_data' %}" class="breadcrumb-item">マスターデータ管理</a>
+<a href="{% url 'project:kind_list' %}" class="breadcrumb-item">企画種別管理</a>
+<span class="breadcrumb-item active">作成</span>
+{% endblock breadcrumb %}
+
+{% block contents %}
+<div class="row">
+    <div class="col">
+        <form method="post">
+            <div class="card">
+                <div class="card-header">
+                    <h3>企画種別種別作成</h3>
+                </div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% bootstrap_form form %}
+                </div>
+                <div class="card-footer pb-0 text-right">
+                    {% buttons %}
+                    <button type="submit" class="btn btn-success mb-0">
+                        送信
+                    </button>
+                    {% endbuttons %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contents %}
+
+{% block extrajs %}
+{{ form.media.js }}
+{% endblock extrajs %}

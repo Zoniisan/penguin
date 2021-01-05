@@ -3,6 +3,7 @@ ENVP = .env_postgres
 DC = docker-compose -f docker-compose.dev.yml
 LHOME = python manage.py loaddata home/fixtures/data.json
 LTHEME = python manage.py loaddata theme/fixtures/data.json
+LPROJECT = python manage.py loaddata project/fixtures/data.json
 
 init:			${ENV} ${ENVP}
 
@@ -17,4 +18,4 @@ start:;			${DC} up --build
 
 stop:;			${DC} down
 
-loaddata:;		${DC} exec django sh -c  "${LHOME} && ${LTHEME}"
+loaddata:;		${DC} exec django sh -c  "${LHOME} && ${LTHEME} && ${LPROJECT}"
